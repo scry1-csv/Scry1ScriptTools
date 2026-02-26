@@ -1,0 +1,163 @@
+﻿<UserControl
+    x:Class="Scry1ScriptTools.Core.Control.ChartControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Scry1ScriptTools.Core.Control"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <DockPanel>
+        <Border
+            BorderBrush="#FF787878"
+            BorderThickness="0,1,0,0"
+            DockPanel.Dock="Top" />
+        <DockPanel Background="#FFEBEBEB" DockPanel.Dock="Top">
+            <TextBlock
+                x:Name="FileNameBlock"
+                Padding="4,0,0,0"
+                HorizontalAlignment="Stretch"
+                DockPanel.Dock="Left"
+                FontSize="11px">
+                FileName
+            </TextBlock>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                    x:Name="ReloadButton"
+                    Margin="0,0,4,0"
+                    HorizontalAlignment="Right"
+                    Background="#00DDDDDD"
+                    BorderThickness="0"
+                    Click="ReloadButton_Click"
+                    DockPanel.Dock="Right">
+                    <TextBlock
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="10"
+                        Text="&#xe777;" />
+                </Button>
+                <Button
+                    x:Name="CloseButton"
+                    Margin="0,0,4,0"
+                    HorizontalAlignment="Right"
+                    Background="#00DDDDDD"
+                    BorderThickness="0"
+                    Click="CloseButton_Click"
+                    DockPanel.Dock="Right">
+                    <TextBlock
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="10px"
+                        Text="&#xe8bb;" />
+                </Button>
+            </StackPanel>
+
+        </DockPanel>
+        <CheckBox
+            x:Name="CheckBox_UfotwLRDifferent"
+            HorizontalAlignment="Center"
+            Checked="CheckBox_UfotwLRDifferent_Checked"
+            Content="左右の違いを検出"
+            DockPanel.Dock="Bottom"
+            IsChecked="False"
+            Unchecked="CheckBox_UfotwLRDifferent_Unchecked"
+            Visibility="Hidden" />
+        <Grid x:Name="PlotsGrid" Margin="0,0,20,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <oxy:Plot
+                x:Name="OxyPlotView"
+                Grid.Row="0"
+                PlotMargins="30,Auto,Auto,Auto"
+                PreviewMouseRightButtonDown="OxyPlotView_PreviewMouseRightButtonDown"
+                PreviewMouseRightButtonUp="OxyPlotView_PreviewMouseRightButtonUp">
+                <oxy:Plot.Axes>
+                    <!--  縦軸の設定  -->
+                    <oxy:LinearAxis
+                        x:Name="PowerAxis"
+                        AbsoluteMaximum="100"
+                        AbsoluteMinimum="100"
+                        AxislineColor="Gray"
+                        IsZoomEnabled="False"
+                        MajorGridlineColor="Silver"
+                        MajorGridlineStyle="Solid"
+                        Maximum="100"
+                        Minimum="-100"
+                        MinorGridlineColor="Silver"
+                        MinorGridlineStyle="Dot"
+                        Position="Left"
+                        TicklineColor="Gray" />
+                    <!--  横軸の設定  -->
+                    <oxy:LinearAxis
+                        x:Name="TimeAxis"
+                        AbsoluteMinimum="0"
+                        Position="Bottom" />
+                </oxy:Plot.Axes>
+
+                <!--  プロットデータの設定  -->
+                <oxy:Plot.Series>
+                    <oxy:LineSeries x:Name="LineSeries" />
+                </oxy:Plot.Series>
+
+                <oxy:Plot.Annotations>
+                    <oxy:LineAnnotation
+                        x:Name="PlayingAnnotation"
+                        LineStyle="Solid"
+                        StrokeThickness="2"
+                        Type="Vertical"
+                        X="100"
+                        Color="Black" />
+                </oxy:Plot.Annotations>
+            </oxy:Plot>
+
+            <oxy:Plot
+                x:Name="OxyPlotView2"
+                Grid.Row="1"
+                Padding="8,0,8,4"
+                PlotMargins="30,0,Auto,Auto"
+                PreviewMouseRightButtonDown="OxyPlotView_PreviewMouseRightButtonDown"
+                PreviewMouseRightButtonUp="OxyPlotView_PreviewMouseRightButtonUp"
+                Visibility="Hidden">
+                <oxy:Plot.Axes>
+                    <!--  縦軸の設定  -->
+                    <oxy:LinearAxis
+                        x:Name="PowerAxis2"
+                        AbsoluteMaximum="100"
+                        AbsoluteMinimum="-100"
+                        AxislineColor="Gray"
+                        IsZoomEnabled="False"
+                        MajorGridlineColor="Silver"
+                        MajorGridlineStyle="Solid"
+                        Maximum="100"
+                        Minimum="-100"
+                        MinorGridlineColor="Silver"
+                        MinorGridlineStyle="Dot"
+                        Position="Left"
+                        TicklineColor="Gray" />
+                    <!--  横軸の設定  -->
+                    <oxy:LinearAxis
+                        x:Name="TimeAxis2"
+                        AbsoluteMinimum="0"
+                        Position="Bottom" />
+                </oxy:Plot.Axes>
+
+                <!--  プロットデータの設定  -->
+                <oxy:Plot.Series>
+                    <oxy:LineSeries x:Name="LineSeries2" TrackerFormatString="{Binding ElementName=LineSeries, Path=(oxy:LineSeries.TrackerFormatString)}" />
+                </oxy:Plot.Series>
+
+                <oxy:Plot.Annotations>
+                    <oxy:LineAnnotation
+                        x:Name="PlayingAnnotation2"
+                        LineStyle="Solid"
+                        StrokeThickness="2"
+                        Type="Vertical"
+                        X="100"
+                        Color="Black" />
+                </oxy:Plot.Annotations>
+            </oxy:Plot>
+        </Grid>
+
+    </DockPanel>
+</UserControl>

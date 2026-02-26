@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/ソリューション項目/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="Core/Core.csproj" />
+  <Project Path="SexToyScriptViewer/SexToyScriptViewer.csproj" />
+</Solution>
