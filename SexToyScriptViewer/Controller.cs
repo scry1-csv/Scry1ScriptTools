@@ -5,7 +5,7 @@ namespace SexToyScriptViewer
 {
     internal enum TimeAxisModeEnum { HHMMSS, Internal }
 
-    internal class Controller : IController
+    internal class Controller
     {
         #region Public Properties
 

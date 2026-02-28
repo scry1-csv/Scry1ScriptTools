@@ -12,10 +12,18 @@ namespace Core.Control
     {
         #region Private Fields
 
-        private readonly IController _controller;
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations = [];
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations2 = [];
         private Func<double, string>? _scriptTimeFormatter;
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler<EventArgs>? ReloadChartRequested;
+        public event EventHandler<EventArgs>? CloseChartRequested;
+        public event EventHandler<(double Min, double Max)>? SyncChartsRangeRequested;
+        public event EventHandler<bool>? IsUserDraggingChanged;
 
         #endregion
 
@@ -27,10 +35,9 @@ namespace Core.Control
 
         #region Constructor
 
-        public ChartControl(IController controller)
+        public ChartControl()
         {
             InitializeComponent();
-            _controller = controller;
         }
 
         #endregion
@@ -112,7 +119,7 @@ namespace Core.Control
             OxyPlotView2.ResetAllAxes();
         }
 
-        public void SetTimeAxisLabelScriptTime()
+        public void SetTimeAxisLabelInternalTime()
         {
             if (_scriptTimeFormatter != null)
             {
@@ -187,12 +194,12 @@ namespace Core.Control
 
         private void ReloadButton_Click(object sender, RoutedEventArgs e)
         {
-            _controller.ReloadChart(this);
+            ReloadChartRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            _controller.CloseChart(this);
+            CloseChartRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void AxisChangedEvent(object? sender, AxisChangedEventArgs e)
@@ -207,7 +214,7 @@ namespace Core.Control
             var type = e.ChangeType;
             if (type == AxisChangeTypes.Pan | type == AxisChangeTypes.Zoom)
             {
-                Dispatcher.Invoke(() => _controller.SyncChartsRange(this, min, max));
+                Dispatcher.Invoke(() => SyncChartsRangeRequested?.Invoke(this, (min, max)));
                 if (IsDualChart)
                 {
                     TimeAxis2.InternalAxis.Zoom(min, max);
@@ -230,18 +237,18 @@ namespace Core.Control
             {
                 TimeAxis.InternalAxis.Zoom(min, max);
                 Dispatcher.Invoke(() => OxyPlotView.InvalidatePlot());
-                Dispatcher.Invoke(() => _controller.SyncChartsRange(this, min, max));
+                Dispatcher.Invoke(() => SyncChartsRangeRequested?.Invoke(this, (min, max)));
             }
         }
 
         private void OxyPlotView_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _controller.IsUserDragging = true;
+            IsUserDraggingChanged?.Invoke(this, true);
         }
 
         private void OxyPlotView_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _controller.IsUserDragging = false;
+            IsUserDraggingChanged?.Invoke(this, false);
         }
 
         private void CheckBox_UfotwLRDifferent_Checked(object sender, RoutedEventArgs e)

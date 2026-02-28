@@ -5,20 +5,35 @@ using System.Windows;
 
 namespace SexToyScriptConverter.Controllers
 {
-    internal class ChartController(Controller parent)
+    public class ChartController
     {
 
-        #region Private Fields
+        #region Private Fields and Properties
 
-        private readonly List<ChartControl> _chartControls = new();
-        private readonly Dictionary<ChartControl, string> _chartFilePaths = new();
+        private readonly Controller _parent;
+        private readonly List<ChartControl> _chartControls = [];
         private double zoomMin = 0;
         private double zoomMax = 0;
 
-        public bool IsUserDragging { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private readonly ChartControl originChart;
+        private readonly ChartControl convertedChart;
 
         #endregion
+
         #region Constructor
+
+        internal ChartController(Controller parent)
+        {
+            _parent = parent;
+            originChart = _parent.MainWindow.OriginChart;
+            convertedChart = _parent.MainWindow.ConvertedChart;
+
+            originChart.HideButtons();
+            convertedChart.HideFileInfoPanel();
+
+            _chartControls.Add(originChart);
+            _chartControls.Add(convertedChart);
+        }
 
         #endregion
 
@@ -47,25 +62,25 @@ namespace SexToyScriptConverter.Controllers
                 CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
                 return;
             }
-            
-            ChartControl origin = new(parent);
-            origin.HideButtons();
-            InitializeChartControlWithScript(origin, scriptAndErrors.Script);
 
-            ChartControl converted = new(parent);
-            converted.HideFileInfoPanel();
-            
-            InitializeChartControlWithScript(converted, scriptAndErrors.Script);
+            originChart.SyncChartsRangeRequested += (s, e) => SyncChartsRange(originChart, e.Min, e.Max);
+            InitializeChartControlWithScript(originChart, scriptAndErrors.Script);
+            originChart.Visibility = Visibility.Visible;
 
+            convertedChart.SyncChartsRangeRequested += (s, e) => SyncChartsRange(convertedChart, e.Min, e.Max);            
+            InitializeChartControlWithScript(convertedChart, scriptAndErrors.Script);
+            convertedChart.Visibility = Visibility.Visible;
 
-            parent.MainWindow?.OriginChart.Children.Clear();
-            parent.MainWindow?.OriginChart.Children.Add(origin);
-            parent.MainWindow?.ConvertedChart.Children.Add(converted);
+            switch(_parent.TimeAxisMode)
+            {
+                case (TimeAxisModeEnum.HHMMSS):
+                    SetTimeAxisHHMMSS();
+                    break;
 
-            if (parent.MainWindow?.RadioButton_HHMMSS.IsChecked ?? false)
-                origin.SetTimeAxisLabelHHMMSS();
-            else
-                origin.SetTimeAxisLabelScriptTime();
+                default:
+                    SetTimeAxisInternal();
+                    break;
+            }
 
         }
 
@@ -78,7 +93,7 @@ namespace SexToyScriptConverter.Controllers
         public void SetTimeAxisInternal()
         {
             foreach (var c in _chartControls)
-                c.SetTimeAxisLabelScriptTime();
+                c.SetTimeAxisLabelInternalTime();
         }
 
         #endregion

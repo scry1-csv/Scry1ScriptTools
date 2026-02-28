@@ -91,7 +91,11 @@ namespace SexToyScriptViewer.Controllers
                 return;
             }
             
-            ChartControl control = new(_parent);
+            ChartControl control = new();
+            control.ReloadChartRequested += (s, e) => ReloadChart(control);
+            control.CloseChartRequested += (s, e) => CloseChart(control);
+            control.SyncChartsRangeRequested += (s, e) => SyncChartsRange(control, e.Min, e.Max);
+            control.IsUserDraggingChanged += (s, e) => _parent.IsUserDragging = e;
             InitializeChartControlWithScript(control, scriptAndErrors.Script);
 
             _chartControls.Add(control);
@@ -100,7 +104,7 @@ namespace SexToyScriptViewer.Controllers
             if (_parent.MainWindow.RadioButton_HHMMSS.IsChecked ?? false)
                 control.SetTimeAxisLabelHHMMSS();
             else
-                control.SetTimeAxisLabelScriptTime();
+                control.SetTimeAxisLabelInternalTime();
 
             RefleshCharts();
         }
@@ -130,7 +134,7 @@ namespace SexToyScriptViewer.Controllers
         public void SetTimeAxisInternal()
         {
             foreach (var c in _chartControls)
-                c.SetTimeAxisLabelScriptTime();
+                c.SetTimeAxisLabelInternalTime();
         }
 
         #endregion

@@ -53,7 +53,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <DockPanel x:Name="OriginChart" Grid.Row="0" />
+            <localControl:ChartControl
+                x:Name="OriginChart"
+                Grid.Row="0"
+                Visibility="Hidden" />
             <Border
                 Grid.Row="1"
                 BorderBrush="Black"
@@ -62,7 +65,10 @@
                     ⇩
                 </TextBlock>
             </Border>
-            <DockPanel x:Name="ConvertedChart" Grid.Row="2" />
+            <localControl:ChartControl
+                x:Name="ConvertedChart"
+                Grid.Row="2"
+                Visibility="Hidden" />
         </Grid>
     </DockPanel>
 </Window>

@@ -5,7 +5,7 @@ namespace SexToyScriptConverter
 {
     internal enum TimeAxisModeEnum { HHMMSS, Internal }
 
-    internal class Controller : IController
+    internal class Controller
     {
         #region Public Properties
 
@@ -38,7 +38,6 @@ namespace SexToyScriptConverter
         public void OnFileDropped(string[] dropped) => File.OnFileDropped(dropped);
         public void OpenFile(string path) => File.OpenFile(path);
         public void OpenScript(string path) => Chart.OpenScript(path);
-        public void ReloadChart(ChartControl control) => throw new NotImplementedException();
         public void LoadMedia(string path) => MainWindow.MediaPlayer.LoadMedia(path);
         public void OnOpenButtonClicked() => File.OnOpenButtonClicked();
         public void OnRadioButtonHHMMSSChecked()
@@ -50,11 +49,6 @@ namespace SexToyScriptConverter
         {
             TimeAxisMode = TimeAxisModeEnum.Internal;
             Chart.SetTimeAxisInternal();
-        }
-
-        public void CloseChart(ChartControl control)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion
