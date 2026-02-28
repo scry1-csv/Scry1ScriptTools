@@ -9,7 +9,7 @@
     xmlns:oxy="http://oxyplot.org/wpf"
     xmlns:vm="clr-namespace:SexToyScriptViewer"
     Title="SexToyScriptViewer"
-    Width="600"
+    Width="800"
     Height="400"
     AllowDrop="True"
     Drop="Window_Drop"

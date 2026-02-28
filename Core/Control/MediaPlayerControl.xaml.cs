@@ -88,12 +88,14 @@ namespace Core.Control
             VolumeSlider.IsEnabled = true;
             VolumeLabel.IsEnabled = true;
             MediaSeekbarSlider.IsEnabled = true;
+            PlaybackSpeedSlider.IsEnabled = true;
+            Speed1xButton.IsEnabled = true;
         }
 
         private void UpdateMediaElapsedLabel(double milliseconds)
         {
             var elapsed = TimeSpan.FromMilliseconds(milliseconds).ToString(@"hh\:mm\:ss");
-            MediaElapsedLabel.Content = elapsed + " / " + _mediaDuration;
+            MediaElapsedLabel.Text = elapsed + " / " + _mediaDuration;
         }
 
         private void StartSync()
@@ -201,7 +203,11 @@ namespace Core.Control
         private void PlaybackSpeedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (MediaElem is not null)
-                MediaElem.SpeedRatio = PlaybackSpeedSlider.Value / 10;
+            {
+                var speed = PlaybackSpeedSlider.Value / 10;
+                MediaElem.SpeedRatio = speed;
+                PlaybackSpeedLabel.Text = $"x{speed:N1}";
+            }
         }
 
         private void Speed1xButton_Click(object sender, RoutedEventArgs e)

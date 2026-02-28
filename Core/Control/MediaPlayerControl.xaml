@@ -26,35 +26,48 @@
                 IsEnabled="False">
                 音量
             </Label>
-            <StackPanel Orientation="Horizontal">
-                <Button
-                    x:Name="PlayButton"
-                    Margin="12,4,12,4"
-                    Padding="12,0,12,0"
-                    Click="Play_Click"
-                    IsEnabled="False">
-                    再生
-                </Button>
-                <Button
-                    x:Name="PauseButton"
-                    Margin="12,4,12,4"
-                    Padding="12,0,12,0"
-                    Click="Pause_Click"
-                    IsEnabled="False">
-                    一時停止
-                </Button>
-                <TextBlock>再生速度</TextBlock>
+            <TextBlock
+                x:Name="MediaElapsedLabel"
+                VerticalAlignment="Center"
+                DockPanel.Dock="Right" />
+            <Button
+                x:Name="PlayButton"
+                Margin="8,4,4,4"
+                Padding="12,0,12,0"
+                Click="Play_Click"
+                DockPanel.Dock="Left"
+                IsEnabled="False">
+                再生
+            </Button>
+            <Button
+                x:Name="PauseButton"
+                Margin="4,4,4,4"
+                Padding="12,0,12,0"
+                Click="Pause_Click"
+                DockPanel.Dock="Left"
+                IsEnabled="False">
+                一時停止
+            </Button>
+            <DockPanel HorizontalAlignment="Center">
+                <TextBlock VerticalAlignment="Center">再生速度:</TextBlock>
+                <TextBlock
+                    x:Name="PlaybackSpeedLabel"
+                    Padding="4,0,0,0"
+                    VerticalAlignment="Center">
+                    x1.0
+                </TextBlock>
                 <Slider
                     x:Name="PlaybackSpeedSlider"
                     Width="150"
-                    Margin="12,4,4,4"
+                    Margin="8,4,4,4"
                     Foreground="Black"
+                    IsEnabled="False"
                     IsSnapToTickEnabled="True"
                     Maximum="20"
                     Minimum="1"
                     SmallChange="1"
                     TickFrequency="1"
-                    TickPlacement="TopLeft"
+                    TickPlacement="BottomRight"
                     ValueChanged="PlaybackSpeedSlider_ValueChanged"
                     Value="10" />
                 <Button
@@ -62,11 +75,10 @@
                     Width="36px"
                     Margin="4,4,12,4"
                     Click="Speed1xButton_Click"
-                    IsEnabled="True">
-                    1x
+                    IsEnabled="False">
+                    x1
                 </Button>
-                <Label x:Name="MediaElapsedLabel" />
-            </StackPanel>
+            </DockPanel>
         </DockPanel>
 
         <!--  映像表示エリア  -->

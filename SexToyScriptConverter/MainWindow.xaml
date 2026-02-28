@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="SexToyScriptConverter"
     Width="800"
-    Height="450"
+    Height="600"
     AllowDrop="True"
     Drop="Window_Drop"
     PreviewDragOver="Window_PreviewDragOver"
@@ -59,7 +59,7 @@
                 Visibility="Hidden" />
             <Border
                 Grid.Row="1"
-                BorderBrush="Black"
+                BorderBrush="#FF787878"
                 BorderThickness="0,1,0,0">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
                     ⇩
