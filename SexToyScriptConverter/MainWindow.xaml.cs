@@ -30,10 +30,9 @@ namespace SexToyScriptConverter
 
         #region XAML UI Event Handlers
 
-        private void OpenButton_Click(object sender, RoutedEventArgs e)
-        {
-            _controller.OnOpenButtonClicked();
-        }
+        private void OpenButton_Click(object sender, RoutedEventArgs e) => _controller.OnOpenButtonClicked();
+        private void RadioButton_HHMMSS_Checked(object sender, RoutedEventArgs e) => _controller?.OnRadioButtonHHMMSSChecked();
+        private void RadioButton_InternalTime_Checked(object sender, RoutedEventArgs e) => _controller?.OnRadioButtonInternalTimeChecked();
 
         private void Window_PreviewDragOver(object sender, DragEventArgs e)
         {
@@ -51,16 +50,18 @@ namespace SexToyScriptConverter
                 _controller.OnFileDropped(dropped);
         }
 
-        private void RadioButton_HHMMSS_Checked(object sender, RoutedEventArgs e)
+        private void TargetScriptTypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            _controller?.OnRadioButtonHHMMSSChecked();
+
         }
 
-        private void RadioButton_InternalTime_Checked(object sender, RoutedEventArgs e)
+
+        private void ConvertMethodComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            _controller?.OnRadioButtonInternalTimeChecked();
+
         }
 
         #endregion
+
     }
 }

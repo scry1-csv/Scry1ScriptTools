@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
-    partial class TimeRoter(List<TimeRoter.ScriptLine> scriptData, string fileName, string filePath) : IScript
+    public partial class TimeRoter(List<TimeRoter.ScriptLine> scriptData, string fileName, string filePath) : IScript
     {
         #region Static Fields
 

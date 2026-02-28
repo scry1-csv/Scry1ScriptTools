@@ -5,22 +5,15 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
-    partial class CoyoteScript : IScript
+    public partial class CoyoteScript : IScript
     {
         #region Public Properties
-
+        public required List<ScriptRow> ScriptData { get; init; }
         public int PlotMax { get { return 100; } }
         public int PlotMin { get { return 0; } }
         public required string FileName { get; init; } = "";
         public required string FilePath { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}"; } }
-
-        #endregion
-
-        #region Private Fields
-
-        // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
-        private List<ScriptLine> _scriptData = new() { };
 
         #endregion
 
@@ -37,7 +30,7 @@ namespace Core.Script
 
             var rows = ScriptUtil.RawCsvToLines(csv_str);
 
-            List<ScriptLine> script = [];
+            List<ScriptRow> script = [];
             List<string> errors = [];
             var emptyline = ScriptUtil.EmptyLineRegex();
             var syntax = SyntaxRegex();
@@ -57,12 +50,9 @@ namespace Core.Script
                 }
 
                 var splitted = rows[i].Split(',');
-                var d = decimal.Parse(splitted[0]);
-                int time = decimal.ToInt32(d * 100);
-
-                script.Add(new ScriptLine()
+                script.Add(new ScriptRow()
                 {
-                    InternalTime = time,
+                    InternalTime = int.Parse(splitted[0]),
                     Frequency = int.Parse(splitted[1]),
                     Strength = int.Parse(splitted[2]),
                 });
@@ -70,7 +60,7 @@ namespace Core.Script
 
             return new ScriptAndErrors(errors.Count == 0 ? new CoyoteScript
             {
-                _scriptData = script,
+                ScriptData = script,
                 FileName = Path.GetFileName(path),
                 FilePath = path
             } : null, errors);
@@ -78,15 +68,15 @@ namespace Core.Script
 
         public IDataPointProvider[] ToPlot()
         {
-            List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0) };
+            List<CustomDataPoint> result = [new CustomDataPoint(0, 0)];
 
             int prevPower = 0;
 
-            foreach (var line in _scriptData)
+            foreach (var row in ScriptData)
             {
-                result.Add(new CustomDataPoint(line.Milliseconds, prevPower));
-                result.Add(new CustomDataPoint(line.Milliseconds, line.Strength));
-                prevPower = line.Strength;
+                result.Add(new CustomDataPoint(row.Milliseconds, prevPower));
+                result.Add(new CustomDataPoint(row.Milliseconds, row.Strength));
+                prevPower = row.Strength;
             }
 
             return result.ToArray();
@@ -106,7 +96,7 @@ namespace Core.Script
         /// <summary>
         /// csvの行のデータを保持する構造体
         /// </summary>
-        public struct ScriptLine
+        public struct ScriptRow
         {
             /// <summary>ミリ秒単位</summary>
             public int InternalTime;

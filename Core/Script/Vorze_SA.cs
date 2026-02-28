@@ -5,22 +5,19 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
-    partial class Vorze_SA : IScript
+    public partial class Vorze_SA : IScript
     {
         #region Public Properties
-
+        public required List<ScriptRow> ScriptData { get; init; }
         public int PlotMax { get { return 100; } }
         public int PlotMin { get { return -100; } }
-        public string FileName { get; init; } = "";
+        public required string FileName { get; init; } = "";
         public required string FilePath { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}"; } }
 
         #endregion
 
         #region Private Fields
-
-        // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
-        private List<ScriptRow> _scriptData = new();
 
         #endregion
 
@@ -32,29 +29,7 @@ namespace Core.Script
         }
 
         public string LabelFormatter_ScriptTime(double milliseconds) => (milliseconds / 100).ToString();
-
-
-        public static List<ScriptRow> ParseCSV(string csv_str)
-        {
-            var rows = ScriptUtil.RawCsvToLines(csv_str);
-
-            List<ScriptRow> result = new();
-
-            foreach (var line in rows)
-            {
-                var splitted = line.Split(',');
-
-                int time = int.Parse(splitted[0]);
-
-                result.Add(new()
-                {
-                    InternalTime = time,
-                    Direction = splitted[1] == "1",
-                    Power = int.Parse(splitted[2])
-                });
-            }
-            return result;
-        }
+            
 
         public static ScriptAndErrors LoadScript(string path)
         {
@@ -97,7 +72,7 @@ namespace Core.Script
 
             return new ScriptAndErrors(errors.Count == 0 ? new Vorze_SA
             {
-                _scriptData = script,
+                ScriptData = script,
                 FileName = Path.GetFileName(path),
                 FilePath = path
             } : null, errors);
@@ -109,16 +84,16 @@ namespace Core.Script
 
             int prevPower = 0;
 
-            foreach (var line in _scriptData)
+            foreach (var row in ScriptData)
             {
                 int power;
-                if (line.Direction == true)
-                    power = line.Power;
+                if (row.Direction == true)
+                    power = row.Power;
                 else
-                    power = -line.Power;
+                    power = -row.Power;
 
-                result.Add(new CustomDataPoint(line.Milliseconds, prevPower, line.InternalTime));
-                result.Add(new CustomDataPoint(line.Milliseconds, power, line.InternalTime));
+                result.Add(new CustomDataPoint(row.Milliseconds, prevPower, row.InternalTime));
+                result.Add(new CustomDataPoint(row.Milliseconds, power, row.InternalTime));
                 prevPower = power;
             }
 
@@ -132,16 +107,16 @@ namespace Core.Script
 
             int prevPower = 0;
 
-            foreach (var line in _scriptData)
+            foreach (var row in ScriptData)
             {
                 int power;
-                if (line.Direction == true)
-                    power = line.Power;
+                if (row.Direction == true)
+                    power = row.Power;
                 else
-                    power = -line.Power;
+                    power = -row.Power;
 
-                result.Add(new CustomDataPoint(line.Milliseconds, prevPower, line.InternalTime));
-                result.Add(new CustomDataPoint(line.Milliseconds, power, line.InternalTime));
+                result.Add(new CustomDataPoint(row.Milliseconds, prevPower, row.InternalTime));
+                result.Add(new CustomDataPoint(row.Milliseconds, power, row.InternalTime));
                 prevPower = power;
             }
 
@@ -167,7 +142,7 @@ namespace Core.Script
             public int InternalTime;
             public bool Direction;
             public int Power;
-            public double Milliseconds { get => (double)InternalTime * 100; }
+            public double Milliseconds => InternalTime * 100; 
             public override string ToString()
             {
                 var builder = new StringBuilder();

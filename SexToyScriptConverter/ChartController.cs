@@ -56,10 +56,14 @@ namespace SexToyScriptConverter
                 return;
             }
 
+            _parent.MainWindow.ConvertSettingPanel.Visibility = Visibility.Visible;
+
             InitializeChartControlWithScript(originChart, scriptAndErrors.Script);
             originChart.Visibility = Visibility.Visible;
-            
-            InitializeChartControlWithScript(convertedChart, scriptAndErrors.Script);
+
+            if (scriptAndErrors.Script is Vorze_SA vorze)
+                InitializeChartControlWithScript(convertedChart, Converter.VorzeToCoyote.ConvertUp(vorze));
+
             convertedChart.Visibility = Visibility.Visible;
 
             switch(_parent.TimeAxisMode)
@@ -72,7 +76,6 @@ namespace SexToyScriptConverter
                     SetTimeAxisInternal();
                     break;
             }
-
         }
 
         public void SetTimeAxisHHMMSS()

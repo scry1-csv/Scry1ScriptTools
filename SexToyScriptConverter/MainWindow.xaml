@@ -58,12 +58,42 @@
                 Grid.Row="0"
                 Visibility="Hidden" />
             <Border
+                x:Name="ConvertSettingPanel"
                 Grid.Row="1"
                 BorderBrush="#FF787878"
                 BorderThickness="0,1,0,0">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
-                    ⇩
-                </TextBlock>
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="12">
+                        ⇩
+                    </TextBlock>
+                    <ComboBox
+                        x:Name="TargetScriptTypeComboBox"
+                        Width="160"
+                        Margin="4"
+                        SelectionChanged="TargetScriptTypeComboBox_SelectionChanged">
+                        <ComboBoxItem x:Name="VorzeSAComboBoxItem" IsSelected="True">A10サイクロンSA・UFOSA</ComboBoxItem>
+                        <ComboBoxItem x:Name="TimeRoterComboBoxItem">タイムローター</ComboBoxItem>
+                        <ComboBoxItem x:Name="FunscriptComboBoxItem">Funscript</ComboBoxItem>
+                        <ComboBoxItem x:Name="CoyoteScriptComboBoxItem">CoyoteScript</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox
+                        x:Name="ConvertMethodComboBox"
+                        Width="100"
+                        Margin="4"
+                        SelectionChanged="ConvertMethodComboBox_SelectionChanged">
+                        <ComboBoxItem IsSelected="True">上昇</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="12">
+                        ⇩
+                    </TextBlock>
+                </StackPanel>
+
             </Border>
             <localControl:ChartControl
                 x:Name="ConvertedChart"

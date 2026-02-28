@@ -5,8 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Core.Script
 {
-
-    class Funscript : IScript
+    public class Funscript : IScript
     {
         #region Public Properties
 
