@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Core.Script
@@ -25,20 +26,23 @@ namespace Core.Script
                     return new ScriptAndErrors(result, []);
                 }
 
-                var ufotw = UFOTW.LoadScript(path);
-                if (ufotw.Script != null) return ufotw;
+                var results = new List<ScriptAndErrors>
+                {
+                    UFOTW.LoadScript(path),
+                    Vorze_SA.LoadScript(path),
+                    TimeRoter.LoadScript(path),
+                };
 
-                var vorze = Vorze_SA.LoadScript(path);
-                if (vorze.Script != null) return vorze;
-
-                var timeRoter = TimeRoter.LoadScript(path);
-                if (timeRoter.Script != null) return timeRoter;
-
-                ScriptAndErrors best = ufotw;
-                if (vorze.Errors.Count < best.Errors.Count) best = vorze;
-                if (timeRoter.Errors.Count < best.Errors.Count) best = timeRoter;
-
-                return best;
+                var nonNull = results.Where(x => x.Script != null).ToList();
+                if (nonNull.Count == 1)
+                    return nonNull[0];
+                else if (nonNull.Count > 1)
+                    return new ScriptAndErrors(null, ["スクリプト種別が判別できませんでした"]);
+                else
+                {
+                    // エラー行数が最も少ないフォーマットと判断し、そのエラーを返す
+                    return results.MinBy(x => x.Errors.Count) ?? new ScriptAndErrors(null, ["スクリプト種別が判別できませんでした"]);
+                }
             }
             catch (Exception e)
             {
