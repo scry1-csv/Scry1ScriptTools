@@ -19,7 +19,7 @@ namespace Scry1ScriptTools.Core.Control
 
         #endregion
 
-        #region Fields
+        #region Private Fields
 
         private readonly DispatcherTimer _annotationsSyncTimer;
         private readonly DispatcherTimer _seekbarSyncTimer;

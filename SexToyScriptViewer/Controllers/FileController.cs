@@ -5,6 +5,8 @@ namespace SexToyScriptViewer.Controllers
 {
     internal class FileController(Controller parent)
     {
+        #region Public Methods
+
         public void OnFileDropped(string[] dropped)
         {
             if (dropped.Length == 1)
@@ -45,5 +47,7 @@ namespace SexToyScriptViewer.Controllers
             if (result == true)
                 OpenFile(dlg.FileName);
         }
+
+        #endregion
     }
 }

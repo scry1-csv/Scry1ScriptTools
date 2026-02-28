@@ -13,18 +13,32 @@ namespace Scry1ScriptTools.Core.Control
     /// </summary>
     public partial class ChartControl : UserControl
     {
+        #region Private Fields
+
         private readonly IController _controller;
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations = [];
         private readonly List<OxyPlot.Wpf.RectangleAnnotation> UfotwDefferenceAnnotations2 = [];
         private Func<double, string>? _scriptTimeFormatter;
 
+        #endregion
+
+        #region Public Properties
+
         public bool IsDualChart { get; private set; }
+
+        #endregion
+
+        #region Constructor
 
         public ChartControl(IController controller)
         {
             InitializeComponent();
             _controller = controller;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void InitializeChart(
             string fileName,
@@ -115,9 +129,6 @@ namespace Scry1ScriptTools.Core.Control
             TimeAxis.LabelFormatter = TimeAxis2.LabelFormatter = LabelFormatter_HHMMSS;
         }
 
-        private static string LabelFormatter_HHMMSS(double milliseconds) =>
-            Script.ScriptUtil.MillisecondsToHHMMSS(milliseconds);
-
         public void MovePlayingAnnotation(double milliseconds)
         {
             double position = milliseconds;
@@ -157,6 +168,17 @@ namespace Scry1ScriptTools.Core.Control
                 OxyPlotView2.InvalidatePlot();
             }
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private static string LabelFormatter_HHMMSS(double milliseconds) =>
+            Script.ScriptUtil.MillisecondsToHHMMSS(milliseconds);
+
+        #endregion
+
+        #region XAML UI Event Handlers
 
         private void ReloadButton_Click(object sender, RoutedEventArgs e)
         {
@@ -238,5 +260,7 @@ namespace Scry1ScriptTools.Core.Control
             OxyPlotView.InvalidatePlot();
             OxyPlotView2.InvalidatePlot();
         }
+
+        #endregion
     }
 }

@@ -10,7 +10,13 @@ namespace SexToyScriptViewer
 {
     public partial class MainWindow : Window
     {
+        #region Private Fields
+
         private readonly Controller _controller;
+
+        #endregion
+
+        #region Constructor
 
         public MainWindow()
         {
@@ -22,6 +28,10 @@ namespace SexToyScriptViewer
             // MediaPlayerControlのイベントを購読してChartControllerへブリッジする
             MediaPlayer.PositionChanged += ms => _controller.MovePlayingAnnotations(ms);
         }
+
+        #endregion
+
+        #region XAML UI Event Handlers
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
         {
@@ -53,5 +63,7 @@ namespace SexToyScriptViewer
         {
             _controller?.OnRadioButtonInternalTimeChecked();
         }
+
+        #endregion
     }
 }

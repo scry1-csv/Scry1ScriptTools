@@ -10,14 +10,24 @@ namespace Scry1ScriptTools.Core.Script
 {
     partial class CoyoteScript : IScript
     {
+        #region Public Properties
+
         public int PlotMax { get { return 100; } }
         public int PlotMin { get { return 0; } }
         public required string FileName { get; init; } = "";
         public required string FilePath { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}"; } }
 
+        #endregion
+
+        #region Private Fields
+
         // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
         private List<ScriptLine> _scriptData = new() { };
+
+        #endregion
+
+        #region Public Methods
 
         public static int Validate(string script_str)
         {
@@ -108,6 +118,17 @@ namespace Scry1ScriptTools.Core.Script
             return result.ToArray();
         }
 
+        #endregion
+
+        #region Private Methods
+
+        [GeneratedRegex("^([0-9]+),(100|[0-9]{1,2}),(100|[0-9]{1,2})$")]
+        private static partial Regex ValidatorRegex();
+
+        #endregion
+
+        #region Inner Types
+
         /// <summary>
         /// csvの行のデータを保持する構造体
         /// </summary>
@@ -152,7 +173,6 @@ namespace Scry1ScriptTools.Core.Script
             }
         }
 
-        [GeneratedRegex("^([0-9]+),(100|[0-9]{1,2}),(100|[0-9]{1,2})$")]
-        private static partial Regex ValidatorRegex();
+        #endregion
     }
 }

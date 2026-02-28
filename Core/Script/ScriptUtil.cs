@@ -14,6 +14,8 @@ namespace Scry1ScriptTools.Core.Script
 {
     public partial class ScriptUtil
     {
+        #region Public Methods
+
         public static IScript? LoadScript(string path)
         {
             try
@@ -64,7 +66,13 @@ namespace Scry1ScriptTools.Core.Script
             return lines;
         }
 
+        #endregion
+
+        #region Private Methods
+
         [GeneratedRegex("\r\n|\r")]
         private static partial Regex _newLine();
+
+        #endregion
     }
 }

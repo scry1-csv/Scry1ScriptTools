@@ -6,11 +6,17 @@ namespace SexToyScriptViewer
 {
     internal class Controller : IController
     {
+        #region Public Properties
+
         public MainWindow MainWindow { get; }
         public ChartController Chart { get; }
         public FileController File { get; }
 
         public bool IsUserDragging { get; set; } = false;
+
+        #endregion
+
+        #region Constructor
 
         public Controller(MainWindow mainWindow)
         {
@@ -19,6 +25,10 @@ namespace SexToyScriptViewer
             Chart = new ChartController(this);
             File = new FileController(this);
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void CloseChart(ChartControl control) => Chart.CloseChart(control);
         public void SyncChartsRange(ChartControl sender, double min, double max) => Chart.SyncChartsRange(sender, min, max);
@@ -32,5 +42,7 @@ namespace SexToyScriptViewer
         public void OnOpenButtonClicked() => File.OnOpenButtonClicked();
         public void OnRadioButtonHHMMSSChecked() => Chart.OnRadioButtonHHMMSSChecked();
         public void OnRadioButtonInternalTimeChecked() => Chart.OnRadioButtonInternalTimeChecked();
+
+        #endregion
     }
 }

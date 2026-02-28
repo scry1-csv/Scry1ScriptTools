@@ -10,6 +10,8 @@ namespace SexToyScriptViewer.Controllers
 {
     internal class ChartController
     {
+        #region Private Fields
+
         private readonly Controller _parent;
         
         private readonly List<ChartControl> _chartControls = new();
@@ -17,10 +19,18 @@ namespace SexToyScriptViewer.Controllers
         private double zoomMin = 0;
         private double zoomMax = 0;
 
+        #endregion
+
+        #region Constructor
+
         public ChartController(Controller parent)
         {
             _parent = parent;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void CloseChart(ChartControl control)
         {
@@ -102,6 +112,22 @@ namespace SexToyScriptViewer.Controllers
             }
         }
 
+        public void OnRadioButtonHHMMSSChecked()
+        {
+            foreach (var c in _chartControls)
+                c.SetTimeAxisLabelHHMMSS();
+        }
+
+        public void OnRadioButtonInternalTimeChecked()
+        {
+            foreach (var c in _chartControls)
+                c.SetTimeAxisLabelScriptTime();
+        }
+
+        #endregion
+
+        #region Private Methods
+
         private void InitializeChartControlWithScript(ChartControl control, IScript script)
         {
             string fileName = "";
@@ -136,16 +162,6 @@ namespace SexToyScriptViewer.Controllers
             );
         }
 
-        public void OnRadioButtonHHMMSSChecked()
-        {
-            foreach (var c in _chartControls)
-                c.SetTimeAxisLabelHHMMSS();
-        }
-
-        public void OnRadioButtonInternalTimeChecked()
-        {
-            foreach (var c in _chartControls)
-                c.SetTimeAxisLabelScriptTime();
-        }
+        #endregion
     }
 }

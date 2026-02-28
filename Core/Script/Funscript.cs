@@ -13,14 +13,23 @@ namespace Scry1ScriptTools.Core.Script
 
     class Funscript : IScript
     {
+        #region Public Properties
+
         public int PlotMax { get { return 100; } }
         public int PlotMin { get { return 0; } }
         public string FileName { get; init; }
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}\n移動時間: {Duration}"; } }
-
         public string FilePath { get; init; }
 
+        #endregion
+
+        #region Private Fields
+
         private readonly FunscriptJson Data;
+
+        #endregion
+
+        #region Constructor
 
         public Funscript(FunscriptJson data, string filename, string filePath)
         {
@@ -28,6 +37,10 @@ namespace Scry1ScriptTools.Core.Script
             FileName = filename;
             FilePath = filePath;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public static Funscript? LoadScript(string path) {
             var result = LoadJson(path);
@@ -51,18 +64,6 @@ namespace Scry1ScriptTools.Core.Script
             return result.ToArray();
         }
 
-        private static FunscriptJson? LoadJson(string path)
-        {
-            var jsonstr = File.ReadAllText(path);
-            var options = new JsonSerializerOptions()
-            {
-                AllowTrailingCommas = true
-            };
-            var result = JsonSerializer.Deserialize<FunscriptJson>(jsonstr, options);
-            return result;
-        }
-
-
         public static int Validate(string script_str)
         {
             return 0;
@@ -74,10 +75,28 @@ namespace Scry1ScriptTools.Core.Script
         
         public string LabelFormatter_HHMMSS(double milliseconds) => ScriptUtil.MillisecondsToHHMMSS(milliseconds);
 
+        #endregion
+
+        #region Private Methods
+
+        private static FunscriptJson? LoadJson(string path)
+        {
+            var jsonstr = File.ReadAllText(path);
+            var options = new JsonSerializerOptions()
+            {
+                AllowTrailingCommas = true
+            };
+            var result = JsonSerializer.Deserialize<FunscriptJson>(jsonstr, options);
+            return result;
+        }
+
+        #endregion
+
+        #region Inner Types
+
         /// <summary>
         /// csvの行のデータを保持する構造体
         /// </summary>
-
         public class CustomDataPoint : IDataPointProvider, IScriptDataPoint
         {
             public double X { get; }
@@ -100,6 +119,8 @@ namespace Scry1ScriptTools.Core.Script
                 return new DataPoint(X, Y);
             }
         }
+
+        #endregion
     }
 
     public class FunscriptJson

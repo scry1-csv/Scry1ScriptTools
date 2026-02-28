@@ -10,9 +10,15 @@ namespace SexToyScriptViewer
 {
     public static class Util
     {
+        #region Public Fields
+
         public static readonly ImmutableArray<string> MediaExts = ImmutableArray.Create(".mp3", ".m4a", ".wav", ".mp4", ".webm", ".mpg");
         public static readonly ImmutableArray<string> ScriptExts = ImmutableArray.Create(".csv", ".funscript");
         public static readonly ImmutableArray<string> Exts = ImmutableArray.Create(MediaExts.Concat(ScriptExts).ToArray());
+
+        #endregion
+
+        #region Public Properties
 
         public static string FileDialogFilter { get
             {
@@ -22,9 +28,15 @@ namespace SexToyScriptViewer
                 return $"スクリプト,音声,動画 ({joined})|{joined}";
             } }
 
+        #endregion
+
+        #region Public Methods
+
         public static void ShowMessageBoxTopMost(string message)
         {
             MessageBox.Show(message, "エラー", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
         }
+
+        #endregion
     }
 }
