@@ -6,12 +6,16 @@
     xmlns:local="clr-namespace:SexToyScriptConverter"
     xmlns:localControl="clr-namespace:Core.Control;assembly=Core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
+    Title="SexToyScriptConverter"
     Width="800"
     Height="450"
+    AllowDrop="True"
+    Drop="Window_Drop"
+    PreviewDragOver="Window_PreviewDragOver"
+    ResizeMode="CanResizeWithGrip"
     mc:Ignorable="d">
-    <StackPanel Orientation="Vertical">
-        <localControl:MediaPlayerControl x:Name="MediaPlayer" Grid.Row="0" />
+    <DockPanel>
+        <localControl:MediaPlayerControl x:Name="MediaPlayer" DockPanel.Dock="Top" />
         <DockPanel DockPanel.Dock="Top">
             <Button
                 Margin="20,10,10,10"
@@ -30,7 +34,35 @@
                 右クリック＋ドラッグ：移動<LineBreak />
                 マウスホイール：ズーム</TextBlock>
         </DockPanel>
+        <StackPanel
+            HorizontalAlignment="Center"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <RadioButton
+                x:Name="RadioButton_HHMMSS"
+                Margin="0,0,10,0"
+                Checked="RadioButton_HHMMSS_Checked">
+                時分秒表示
+            </RadioButton>
+            <RadioButton Margin="0,0,0,0" Checked="RadioButton_InternalTime_Checked">内部値表示</RadioButton>
+        </StackPanel>
 
-
-    </StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel x:Name="OriginChart" Grid.Row="0" />
+            <Border
+                Grid.Row="1"
+                BorderBrush="Black"
+                BorderThickness="0,1,0,0">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                    ⇩
+                </TextBlock>
+            </Border>
+            <DockPanel x:Name="ConvertedChart" Grid.Row="2" />
+        </Grid>
+    </DockPanel>
 </Window>

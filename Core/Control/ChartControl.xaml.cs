@@ -1,4 +1,5 @@
-﻿using OxyPlot.Annotations;
+﻿using Core.Script;
+using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System.Windows;
@@ -164,6 +165,14 @@ namespace Core.Control
                 OxyPlotView2.InvalidatePlot();
             }
         }
+
+        public void HideButtons()
+        {
+            ReloadButton.Visibility = Visibility.Hidden;
+            CloseButton.Visibility = Visibility.Hidden;
+        }
+
+        public void HideFileInfoPanel() => FileInfoPanel.Visibility = Visibility.Hidden;
 
         #endregion
 

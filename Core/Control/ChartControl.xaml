@@ -14,7 +14,10 @@
             BorderBrush="#FF787878"
             BorderThickness="0,1,0,0"
             DockPanel.Dock="Top" />
-        <DockPanel Background="#FFEBEBEB" DockPanel.Dock="Top">
+        <DockPanel
+            x:Name="FileInfoPanel"
+            Background="#FFEBEBEB"
+            DockPanel.Dock="Top">
             <TextBlock
                 x:Name="FileNameBlock"
                 Padding="4,0,0,0"

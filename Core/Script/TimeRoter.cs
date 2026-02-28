@@ -5,22 +5,24 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
-    partial class TimeRoter : IScript
+    partial class TimeRoter(List<TimeRoter.ScriptLine> scriptData, string fileName, string filePath) : IScript
     {
+        #region Static Fields
+
+        public static TimeRoter EmptyScript = new([], "", "");
+
+        #endregion
+
         #region Public Properties
 
         public int PlotMax { get { return 1000; } }
         public int PlotMin { get { return 0; } }
-        public string FileName { get; init; } = "";
-        public required string FilePath { get; init; }
+        public string FileName { get; init; } = fileName;
+        public string FilePath { get; init; } = filePath;
         public string TrackerFormatString { get { return "{1}: {HHMMSS} ({ScriptTime})\n{3}: {4}"; } }
 
         #endregion
-
-        #region Private Fields
-
-        // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
-        private List<ScriptLine> _scriptData = new() { };
+        #region Constructor
 
         #endregion
 
@@ -70,12 +72,11 @@ namespace Core.Script
                 });
             }
 
-            return new ScriptAndErrors(errors.Count == 0 ? new TimeRoter
-            {
-                _scriptData = script,
-                FileName = Path.GetFileName(path),
-                FilePath = path
-            } : null, errors);
+            return new ScriptAndErrors(errors.Count == 0 ? new TimeRoter(
+                script,
+                Path.GetFileName(path),
+                path
+            ) : null, errors);
         }
 
         public IDataPointProvider[] ToPlot()
@@ -84,7 +85,7 @@ namespace Core.Script
 
             int prevPower = 0;
 
-            foreach (var line in _scriptData)
+            foreach (var line in scriptData)
             {
                 result.Add(new CustomDataPoint(line.Milliseconds, prevPower));
                 result.Add(new CustomDataPoint(line.Milliseconds, line.Power));
