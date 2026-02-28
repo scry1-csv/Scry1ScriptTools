@@ -3,15 +3,8 @@ using System.IO;
 
 namespace SexToyScriptViewer.Controllers
 {
-    internal class FileController
+    internal class FileController(Controller parent)
     {
-        private readonly Controller _parent;
-
-        public FileController(Controller parent)
-        {
-            _parent = parent;
-        }
-
         public void OnFileDropped(string[] dropped)
         {
             if (dropped.Length == 1)
@@ -27,7 +20,7 @@ namespace SexToyScriptViewer.Controllers
                 case ".csv":
                 case ".funscript":
                 case ".coyotescript":
-                    _parent.Chart.OpenScript(path);
+                    parent.Chart.OpenScript(path);
                     break;
                 case ".mp3":
                 case ".m4a":
@@ -35,7 +28,7 @@ namespace SexToyScriptViewer.Controllers
                 case ".mp4":
                 case ".webm":
                 case ".mpg":
-                    _parent.Media.LoadMedia(path);
+                    parent.LoadMedia(path);
                     break;
                 default:
                     Util.ShowMessageBoxTopMost("対応していないファイル形式です");
@@ -45,7 +38,7 @@ namespace SexToyScriptViewer.Controllers
 
         public void OnOpenButtonClicked()
         {
-            _parent.Media.StopMedia();
+            parent.MainWindow.MediaPlayer.Stop();
 
             OpenFileDialog dlg = new() { Filter = Util.FileDialogFilter };
             bool? result = dlg.ShowDialog();

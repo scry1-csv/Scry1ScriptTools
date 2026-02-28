@@ -2,10 +2,12 @@
 
 このドキュメントは、AIコーディングエージェントがコードベースの一貫性を維持し、効率的に開発を進めるためのガイドラインです。
 
-## 🏛️ アーキテクチャと全体像 (Big Picture Architecture)
+## アーキテクチャと全体像 (Big Picture Architecture)
 プロジェクトは主に2つの要素で構成されています：
-1. **Core**: スクリプトの解析やデータ構造を担うクラスライブラリ（`IScript`, `ScriptUtil`など）。
-2. **SexToyScriptViewer**: UI（WPF）および全体制御。
+1. **Core**: 再利用可能なロジックとUIコンポーネントを担うクラスライブラリ。
+   - `Script/`: スクリプト解析・データ構造（`IScript`, `ScriptUtil`等）
+   - `Control/`: 再利用可能なWPF UserControl（`ChartControl`, `MediaPlayerControl`等）
+2. **SexToyScriptViewer**: UI（WPF）および全体制御。Coreを参照する形で動作する。
 
 ### Pure MVCアーキテクチャ
 当WPFプロジェクトは一般的なMVVMではなく、**完全なMVCパターン**を採用しています。
@@ -18,11 +20,17 @@
       _controller.OnOpenButtonClicked();
   }
   ```
-- **ファサードとしてのControllerと直接的なUI操作**: `Controller.cs` はビューからの入力を受け付ける窓口（Facade）として機能し、実際の処理は機能ごとに分割された各サブコントローラー（`MediaController`, `ChartController`, `FileController`, `SyncController`）に処理を委譲します。各コントローラーは親のControllerを経由してUIの参照にアクセスし、状態を手動で更新します。
+- **ファサードとしてのControllerと直接的なUI操作**: `Controller.cs` はビューからの入力を受け付ける窓口（Facade）として機能し、実際の処理は機能ごとに分割された各コントローラー（`ChartController`, `FileController`）に処理を委譲します。
+
+### MediaPlayerControl（Core/Control/）
+メディア再生UI・ロジックは `Core.Control.MediaPlayerControl`（WPF UserControl）に集約されています。
+- `MediaPlayerControl` は**自律的**に動作し、再生・停止・シーク・音量・タイマー同期をすべて内部で処理します。
+- 外部への通知はイベントで公開します。Viewのコードビハインドで購読し、Controllerへ委譲します：
   ```csharp
-  // MediaController.cs 内での制御の例
-  _parent.MainWindow.MediaElem.Play();
+  // MainWindow.xaml.cs のコンストラクタ内
+  MediaPlayer.PositionChanged += ms => _controller.MovePlayingAnnotations(ms);
   ```
+- `MediaPlayerControl` を XAML に配置する場合は `localControl:MediaPlayerControl x:Name="MediaPlayer"` として使用します。
 
 ## 🛠️ プロジェクト固有の規約とパターン (Project Conventions)
 - **手動UI同期処理 (イベント駆動)**: OxyPlotチャートのズーム等が発生した際、リアクティブプロパティに頼らず、`ChartController` がリストを反復処理して直接別UIを更新します。
@@ -36,13 +44,17 @@
           if (item != sender) item.ZoomTimeAxis(min, max);
   }
   ```
-- **タイマーベースの描画同期 (ポーリング)**: メディアの再生位置とグラフ同期は、`SyncController.cs` 内の `DispatcherTimer`（10ms間隔）を使用して定期的にメディア位置をポーリングし、更新を行っています。
+- **タイマーベースの描画同期 (ポーリング)**: メディアの再生位置とグラフ同期は、`MediaPlayerControl` 内の `DispatcherTimer`（10ms間隔）を使用して定期的にメディア位置をポーリングし、`PositionChanged` イベントで外部に通知します。
 
 ## 🔌 統合と拡張性 (Integration & Extensibility)
 - **新規スクリプト形式の追加**:
   1. `Core\Script\IScript.cs` を実装した新しいパーサクラスを作成。
   2. OxyPlot向け描画データ出力（`ToPlot()`）を実装。
   3. `Core\Script\ScriptUtil.cs`の`LoadScript()`にある拡張子判定分岐に追加。
+- **新規プロジェクトでメディア再生機能を使う**:
+  1. `Core` プロジェクトを参照に追加。
+  2. XAMLに `localControl:MediaPlayerControl x:Name="MediaPlayer"` を配置。
+  3. `MediaPlayer.PositionChanged` イベントを購読してグラフ等と連携。
 - **コンポーネント間連携**: チャートの操作は `Core\Control\ChartControl.xaml.cs` に集約されており、`OxyPlot` のプロパティ操作（SeriesやAnnotationの追加）はここで行います。複数のチャートが同期して動くため、個別の独立した更新は`Controller`通して全体に波及させる（SyncChartsRange等）設計になっています。
 
 ## 🏃 開発ワークフロー

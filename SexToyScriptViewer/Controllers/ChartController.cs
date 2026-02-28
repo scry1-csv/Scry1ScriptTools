@@ -2,6 +2,7 @@ using Scry1ScriptTools.Core.Control;
 using Scry1ScriptTools.Core.Script;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 

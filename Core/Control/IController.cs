@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scry1ScriptTools.Core.Control
+namespace Core.Control
 {
     public interface IController
     {

@@ -19,107 +19,15 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel
-            x:Name="MediaPlayerPanel"
-            Grid.Row="0"
-            Margin="0,0,0,3"
-            MouseWheel="Grid_MouseWheel">
-            <DockPanel>
-                <Slider
-                    x:Name="VolumeSlider"
-                    Width="80"
-                    MaxWidth="80"
-                    Margin="0,0,8,0"
-                    VerticalAlignment="Center"
-                    DockPanel.Dock="Right"
-                    IsEnabled="False"
-                    Maximum="1"
-                    ValueChanged="VolumeSlider_ValueChanged"
-                    Value="1" />
-                <Label
-                    x:Name="VolumeLabel"
-                    DockPanel.Dock="Right"
-                    IsEnabled="False">
-                    音量
-                </Label>
-                <StackPanel Orientation="Horizontal">
-                    <Button
-                        x:Name="PlayButton"
-                        Margin="12,4,12,4"
-                        Padding="12,0,12,0"
-                        Click="Play_Click"
-                        IsEnabled="False">
-                        再生
-                    </Button>
-                    <Button
-                        x:Name="PauseButton"
-                        Margin="12,4,12,4"
-                        Padding="12,0,12,0"
-                        Click="Pause_Click"
-                        IsEnabled="False">
-                        一時停止
-                    </Button>
-                    <TextBlock>再生速度</TextBlock>
-                    <Slider
-                        x:Name="PlaybackSpeedSlider"
-                        Width="150"
-                        Margin="12,4,4,4"
-                        Foreground="Black"
-                        IsSnapToTickEnabled="True"
-                        Maximum="20"
-                        Minimum="1"
-                        SmallChange="1"
-                        TickFrequency="1"
-                        TickPlacement="TopLeft"
-                        ValueChanged="PlaybackSpeedSlider_ValueChanged"
-                        Value="10" />
-                    <Button
-                        x:Name="Speed1xButton"
-                        Width="36px"
-                        Margin="4,4,12,4"
-                        Click="Speed1xButton_Click"
-                        IsEnabled="True">
-                        1x
-                    </Button>
-                    <Label x:Name="MediaElapsedLabel" />
-                </StackPanel>
-            </DockPanel>
 
-            <MediaElement
-                Name="MediaElem"
-                MaxHeight="300"
-                LoadedBehavior="Manual"
-                MediaFailed="MediaElem_MediaFailed"
-                MediaOpened="MediaElem_MediaOpened"
-                Stretch="Uniform"
-                Volume="1" />
+        <!-- Core の MediaPlayerControl を使用する -->
+        <localControl:MediaPlayerControl
+            x:Name="MediaPlayer"
+            Grid.Row="0" />
 
-            <DockPanel>
-                <Slider
-                    Name="MediaSeekbarSlider"
-                    Margin="30,0,21,0"
-                    IsEnabled="False"
-                    Thumb.DragCompleted="MediaProgressSlider_DragCompleted"
-                    Thumb.DragStarted="MediaProgressSlider_DragStarted"
-                    ValueChanged="MediaProgressSlider_ValueChanged" />
-            </DockPanel>
-        </StackPanel>
-
-        <GridSplitter
-            x:Name="Resizer"
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Height="3"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Bottom"
-            Visibility="Hidden" />
-
-        <DockPanel Grid.Row="2">
+        <DockPanel Grid.Row="1">
 
             <DockPanel DockPanel.Dock="Top">
                 <Button
