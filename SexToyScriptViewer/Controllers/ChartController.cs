@@ -74,15 +74,15 @@ namespace SexToyScriptViewer.Controllers
 
         public void OpenScript(string path)
         {
-            var script = ScriptUtil.LoadScript(path, out string? error);
-            if (script == null)
+            var scriptAndErrors = ScriptUtil.LoadScript(path);
+            if (scriptAndErrors.Script == null)
             {
-                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{error}");
+                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
                 return;
             }
             
             ChartControl control = new(_parent);
-            InitializeChartControlWithScript(control, script);
+            InitializeChartControlWithScript(control, scriptAndErrors.Script);
 
             _chartControls.Add(control);
             _chartFilePaths[control] = path;
@@ -99,14 +99,14 @@ namespace SexToyScriptViewer.Controllers
         {
             if (_chartFilePaths.TryGetValue(control, out var path))
             {
-                var script = ScriptUtil.LoadScript(path, out string ? error);
-                if (script == null)
+                var scriptAndErrors = ScriptUtil.LoadScript(path);
+                if (scriptAndErrors.Script == null)
                 {
-                    CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{error}");
+                    CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
                     return;
                 }
 
-                InitializeChartControlWithScript(control, script);
+                InitializeChartControlWithScript(control, scriptAndErrors.Script);
                 RefleshCharts();                
             }
         }

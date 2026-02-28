@@ -28,7 +28,7 @@ namespace Core.Script
 
         public static int Validate(string script_str)
         {
-            Regex r = ValidatorRegex();
+            Regex r = SyntaxRegex();
 
             var lines = ScriptUtil.RawCsvToLines(script_str);
             int result = 0;
@@ -58,7 +58,7 @@ namespace Core.Script
                 if (emptyline.IsMatch(lines[i]))
                     result.AppendLine($"{i + 1}行目 空行です！");
 
-                if (!ValidatorRegex().IsMatch(lines[i]))
+                if (!SyntaxRegex().IsMatch(lines[i]))
                     result.AppendLine($"{i + 1}行目 構文エラー: {lines[i]}");
             }
 
@@ -79,7 +79,7 @@ namespace Core.Script
 
             foreach (var line in lines)
             {
-                if(!ValidatorRegex().IsMatch(line))
+                if(!SyntaxRegex().IsMatch(line))
                     return null;
 
                 var splitted = line.Split(',');
@@ -120,7 +120,7 @@ namespace Core.Script
         #region Private Methods
 
         [GeneratedRegex("^([0-9]+),(100|[0-9]{1,2}),(100|[0-9]{1,2})$")]
-        private static partial Regex ValidatorRegex();
+        private static partial Regex SyntaxRegex();
 
         #endregion
 

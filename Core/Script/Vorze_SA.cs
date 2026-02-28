@@ -20,24 +20,11 @@ namespace Core.Script
         #region Private Fields
 
         // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
-        private List<ScriptLine> _scriptData = new();
+        private List<ScriptRow> _scriptData = new();
 
         #endregion
 
         #region Public Methods
-
-        public static int Validate(string csv_str)
-        {
-            Regex r = ValidatorRegex();
-
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
-            int result = 0;
-            foreach (var line in lines)
-                if (r.IsMatch(line))
-                    result++;
-
-            return result;
-        }
 
         public int MillisecondsToInternalTime(double milliseconds)
         {
@@ -47,13 +34,13 @@ namespace Core.Script
         public string LabelFormatter_ScriptTime(double milliseconds) => (milliseconds / 100).ToString();
 
 
-        public static List<ScriptLine> ParseCSV(string csv_str)
+        public static List<ScriptRow> ParseCSV(string csv_str)
         {
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
+            var rows = ScriptUtil.RawCsvToLines(csv_str);
 
-            List<ScriptLine> result = new();
+            List<ScriptRow> result = new();
 
-            foreach (var line in lines)
+            foreach (var line in rows)
             {
                 var splitted = line.Split(',');
 
@@ -69,35 +56,51 @@ namespace Core.Script
             return result;
         }
 
-        public static Vorze_SA? LoadScript(string path)
+        public static ScriptAndErrors LoadScript(string path)
         {
             using var f = new StreamReader(path);
-            var lines = ScriptUtil.RawCsvToLines(f.ReadToEnd());
-            List<ScriptLine> result = new();
+            var rows = ScriptUtil.RawCsvToLines(f.ReadToEnd());
+            List<ScriptRow> script = [];
+            List<string> errors = [];
+            var emptyline = ScriptUtil.EmptyLineRegex();
+            var syntax = SyntaxRegex();
 
-            foreach (var line in lines)
+            for (int i = 0; i < rows.Count; i++)
             {
-                if (!ValidatorRegex().IsMatch(line))
-                    return null;
+                if (emptyline.IsMatch(rows[i]))
+                {
+                    errors.Add($"{i + 1}行目: 空行です！");
+                    continue;
+                }
+                if (!syntax.IsMatch(rows[i]))
+                {
+                    errors.Add($"{i + 1}行目: 構文エラー");
+                    continue;
+                }
 
-                var splitted = line.Split(',');
+                var splitted = rows[i].Split(',');
 
                 int time = int.Parse(splitted[0]);
 
-                result.Add(new()
+                script.Add(new()
                 {
                     InternalTime = time,
                     Direction = splitted[1] == "1",
                     Power = int.Parse(splitted[2])
                 });
             }
-            return new Vorze_SA()
+
+            if (script.Count == 0)
             {
-                _scriptData = result,
+                return new ScriptAndErrors(null, errors);
+            }
+
+            return new ScriptAndErrors(errors.Count == 0 ? new Vorze_SA
+            {
+                _scriptData = script,
                 FileName = Path.GetFileName(path),
                 FilePath = path
-            };
-            
+            } : null, errors);
         }
 
         public IDataPointProvider[] ToPlot()
@@ -150,7 +153,7 @@ namespace Core.Script
         #region Private Methods
 
         [GeneratedRegex("^([0-9]+),([01]),(100|[0-9]{1,2})")]
-        private static partial Regex ValidatorRegex();
+        private static partial Regex SyntaxRegex();
 
         #endregion
 
@@ -159,7 +162,7 @@ namespace Core.Script
         /// <summary>
         /// csvの行のデータを保持する構造体
         /// </summary>
-        public record ScriptLine
+        public record ScriptRow
         {
             public int InternalTime;
             public bool Direction;

@@ -16,7 +16,6 @@ namespace Core.Script
         public abstract string FilePath { get; init; }
         public abstract string TrackerFormatString { get; }
 
-        public static abstract int Validate(string script_str);
         public abstract string LabelFormatter_ScriptTime(double seconds);
         
         public abstract int MillisecondsToInternalTime(double milliseconds);

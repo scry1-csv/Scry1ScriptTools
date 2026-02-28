@@ -26,20 +26,6 @@ namespace Core.Script
 
         #region Public Methods
 
-        public static int Validate(string script_str)
-        {
-            Regex r = ValidatorRegex();
-
-            var lines = ScriptUtil.RawCsvToLines(script_str);
-            int result = 0;
-            int max = lines.Count < 20 ? lines.Count : 20;
-            foreach (var line in lines.GetRange(0, max))
-                if (r.IsMatch(line))
-                    result++;
-
-            return result;
-        }
-
         public int MillisecondsToInternalTime(double milliseconds)
         {
             return Convert.ToInt32(milliseconds / 10);
@@ -47,85 +33,49 @@ namespace Core.Script
 
         public string LabelFormatter_ScriptTime(double milliseconds) => ((decimal)milliseconds / 10).ToString();
 
-        public static string? Inspect(string csv_str)
-        {
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
-
-            StringBuilder result = new();
-
-            var emptyline = new Regex(@"^$");
-            var syntax = new Regex(@"^[0-9]+,[01],(100|[0-9]{1,2})$");
-            //int prevtime = -1;
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                if (emptyline.IsMatch(lines[i]))
-                    result.AppendLine($"{i + 1}行目 空行です！");
-
-                if (!syntax.IsMatch(lines[i]))
-                    result.AppendLine($"{i + 1}行目 構文エラー: {lines[i]}");
-            }
-
-            if (result.Length > 0)
-                return result.ToString();
-            else
-                return null;
-        }
-
-        public static List<ScriptLine> ParseCSV(string csv_str)
-        {
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
-
-            List<ScriptLine> result = new();
-
-            foreach (var line in lines)
-            {
-                var splitted = line.Split(',');
-
-                var d = decimal.Parse(splitted[0]);
-                int time = decimal.ToInt32(d * 100);
-
-                result.Add(new ScriptLine()
-                {
-                    InternalTime = time,
-                    Power = int.Parse(splitted[1])
-                });
-            }
-
-            return result;
-        }
-
-        public static TimeRoter? LoadScript(string path)
+        public static ScriptAndErrors LoadScript(string path)
         {
             using var f = new StreamReader(path);
             var csv_str = f.ReadToEnd();
 
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
+            var rows = ScriptUtil.RawCsvToLines(csv_str);
 
-            List<ScriptLine> result = new();
+            List<ScriptLine> script = [];
+            List<string> errors = [];
+            var emptyline = ScriptUtil. EmptyLineRegex();
+            var syntax = SyntaxRegex();
 
-            foreach (var line in lines)
+            for (int i = 0; i < rows.Count; i++)
             {
-                if(!ValidatorRegex().IsMatch(line))
-                    return null;
+                if (emptyline.IsMatch(rows[i]))
+                {
+                    errors.Add($"{i + 1}行目: 空行です！");
+                    continue;
+                }
 
-                var splitted = line.Split(',');
+                if (!syntax.IsMatch(rows[i]))
+                { 
+                    errors.Add($"{i + 1}行目: 構文エラー");
+                    continue;
+                }
+
+                var splitted = rows[i].Split(',');
                 var d = decimal.Parse(splitted[0]);
                 int time = decimal.ToInt32(d * 100);
 
-                result.Add(new ScriptLine()
+                script.Add(new ScriptLine()
                 {
                     InternalTime = time,
                     Power = int.Parse(splitted[1])
                 });
             }
 
-            return new TimeRoter()
+            return new ScriptAndErrors(errors.Count == 0 ? new TimeRoter
             {
-                _scriptData = result,
+                _scriptData = script,
                 FileName = Path.GetFileName(path),
                 FilePath = path
-            };
+            } : null, errors);
         }
 
         public IDataPointProvider[] ToPlot()
@@ -149,7 +99,7 @@ namespace Core.Script
         #region Private Methods
 
         [GeneratedRegex("^([0-9]+)(\\.[0-9]{1,2})?,(1000|[0-9]{1,3})$")]
-        private static partial Regex ValidatorRegex();
+        private static partial Regex SyntaxRegex();
 
         #endregion
 
@@ -175,23 +125,15 @@ namespace Core.Script
             }
         }
 
-        public class CustomDataPoint : IDataPointProvider, IScriptDataPoint
+        public class CustomDataPoint(double x, double y) : IDataPointProvider, IScriptDataPoint
         {
-            public double X { get; }
-            public double Y { get; }
-            public string HHMMSS { get; }
-            public string ScriptTime { get; }
+            public double X { get; } = x;
+            public double Y { get; } = y;
+            public string HHMMSS { get; } = ScriptUtil.MillisecondsToHHMMSS(x);
+            public string ScriptTime { get; } = $"{x / 1000:F2}";
             public DataPoint GetDataPoint()
             {
                 return new DataPoint(X, Y);
-            }
-
-            public CustomDataPoint(double x, double y)
-            {
-                X = x;
-                Y = y;
-                HHMMSS = ScriptUtil.MillisecondsToHHMMSS(x);
-                ScriptTime = $"{x / 1000:F2}";
             }
         }
 

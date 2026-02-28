@@ -21,24 +21,11 @@ namespace Core.Script
 
         // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
         //private (List<SeparatedScriptLine> left, List<SeparatedScriptLine> right) _separatedScriptData = (new(), new());
-        private List<ScriptLine> _scriptData = new();
+        private List<ScriptRow> _scriptData = new();
 
         #endregion
 
         #region Public Methods
-
-        public static int Validate(string csv_str)
-        {
-            Regex r = ValidatorRegex();
-
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
-            int result = 0;
-            foreach (var line in lines)
-                if (r.IsMatch(line))
-                    result++;
-
-            return result;
-        }
 
         public int MillisecondsToInternalTime(double milliseconds)
         {
@@ -75,21 +62,32 @@ namespace Core.Script
             return result;
         }
 
-        public static UFOTW? LoadScript(string path)
+        public static ScriptAndErrors LoadScript(string path)
         {
             using var f = new StreamReader(path);
 
             var csv_str = f.ReadToEnd();
 
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
+            var rows = ScriptUtil.RawCsvToLines(csv_str);
 
-            List<ScriptLine> script = new();
+            List<ScriptRow> script = [];
+            List<string> errors = [];
+            var emptyline = ScriptUtil.EmptyLineRegex();
+            var syntax = SyntaxRegex();
 
-            foreach (var line in lines)
+            for (int i = 0; i < rows.Count; i++)
             {
-                if (!ValidatorRegex().IsMatch(line))
-                    return null;
-                var splitted = line.Split(',');
+                if (emptyline.IsMatch(rows[i]))
+                {
+                    errors.Add($"{i + 1}行目: 空行です！");
+                    continue;
+                }
+                if (!syntax.IsMatch(rows[i]))
+                {
+                    errors.Add($"{i + 1}行目: 構文エラー");
+                    continue;
+                }
+                var splitted = rows[i].Split(',');
 
                 int time = int.Parse(splitted[0]);
                 bool leftDirection = splitted[1] == "1";
@@ -97,7 +95,7 @@ namespace Core.Script
                 int leftPower = int.Parse(splitted[2]);
                 int rightPower = int.Parse(splitted[4]);
 
-                script.Add(new ScriptLine()
+                script.Add(new ScriptRow()
                 {
                     InternalTime = time,
                     LeftDirection = leftDirection,
@@ -107,17 +105,22 @@ namespace Core.Script
                 });
             }
 
-            return new UFOTW()
+            if (script.Count == 0)
+            {
+                return new ScriptAndErrors(null, errors);
+            }
+
+            return new ScriptAndErrors(errors.Count == 0 ? new UFOTW
             {
                 _scriptData = script,
                 FileName = Path.GetFileName(path),
                 FilePath = path
-            };
+            } : null, errors);
         }
 
         public IDataPointProvider[] ToPlot()
         {
-            List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, 0) };
+            List<CustomDataPoint> result = [new CustomDataPoint(0, 0, 0)];
 
             bool prevLeftDirection = true, prevRightDirection = true;
             int prevLeftPower = 0, prevRightPower = 0;
@@ -189,13 +192,13 @@ namespace Core.Script
         #region Private Methods
 
         [GeneratedRegex("^([0-9]+),([01]),(100|[0-9]{1,2}),([01]),(100|[0-9]{1,2})")]
-        private static partial Regex ValidatorRegex();
+        private static partial Regex SyntaxRegex();
 
         #endregion
 
         #region Inner Types
 
-        public record ScriptLine
+        public record ScriptRow
         {
             public int InternalTime;
             public bool LeftDirection;
