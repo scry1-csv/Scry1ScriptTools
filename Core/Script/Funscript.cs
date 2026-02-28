@@ -21,6 +21,10 @@ namespace Core.Script
         #region Private Fields
 
         private readonly FunscriptJson Data;
+        private static readonly JsonSerializerOptions options = new()
+        {
+            AllowTrailingCommas = true
+        };
 
         #endregion
 
@@ -59,10 +63,6 @@ namespace Core.Script
             return result.ToArray();
         }
 
-        public static int Validate(string script_str)
-        {
-            return 0;
-        }
 
         public int MillisecondsToInternalTime(double milliseconds) => (int)milliseconds;
 
@@ -77,10 +77,6 @@ namespace Core.Script
         private static FunscriptJson? LoadJson(string path)
         {
             var jsonstr = File.ReadAllText(path);
-            var options = new JsonSerializerOptions()
-            {
-                AllowTrailingCommas = true
-            };
             var result = JsonSerializer.Deserialize<FunscriptJson>(jsonstr, options);
             return result;
         }
@@ -127,7 +123,7 @@ namespace Core.Script
         [JsonPropertyName("range")]
         public int Range { get; set; }
         [JsonPropertyName("actions")]
-        public List<Action> Actions { get; set; } = new List<Action>();
+        public List<Action> Actions { get; set; } = [];
 
         public class Action
         {

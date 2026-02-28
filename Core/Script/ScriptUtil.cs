@@ -21,10 +21,7 @@ namespace Core.Script
                     return new ScriptAndErrors(result, []);
                 }
                 else if (Path.GetExtension(path) == ".coyotescript")
-                {
-                    result = CoyoteScript.LoadScript(path);
-                    return new ScriptAndErrors(result, []);
-                }
+                    return CoyoteScript.LoadScript(path);
 
                 var results = new List<ScriptAndErrors>
                 {

@@ -25,78 +25,55 @@ namespace Core.Script
         #endregion
 
         #region Public Methods
-
-        public static int Validate(string script_str)
-        {
-            Regex r = SyntaxRegex();
-
-            var lines = ScriptUtil.RawCsvToLines(script_str);
-            int result = 0;
-            int max = lines.Count < 20 ? lines.Count : 20;
-            foreach (var line in lines.GetRange(0, max))
-                if (r.IsMatch(line))
-                    result++;
-
-            return result;
-        }
-
         public int MillisecondsToInternalTime(double milliseconds) => (int)milliseconds;
 
         public string LabelFormatter_ScriptTime(double milliseconds) => milliseconds.ToString();
 
-        public static string? Inspect(string csv_str)
-        {
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
 
-            StringBuilder result = new();
-
-            var emptyline = new Regex(@"^$");
-            //int prevtime = -1;
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                if (emptyline.IsMatch(lines[i]))
-                    result.AppendLine($"{i + 1}行目 空行です！");
-
-                if (!SyntaxRegex().IsMatch(lines[i]))
-                    result.AppendLine($"{i + 1}行目 構文エラー: {lines[i]}");
-            }
-
-            if (result.Length > 0)
-                return result.ToString();
-            else
-                return null;
-        }
-
-        public static CoyoteScript? LoadScript(string path)
+        public static ScriptAndErrors LoadScript(string path)
         {
             using var f = new StreamReader(path);
             var csv_str = f.ReadToEnd();
 
-            var lines = ScriptUtil.RawCsvToLines(csv_str);
+            var rows = ScriptUtil.RawCsvToLines(csv_str);
 
-            List<ScriptLine> result = new();
+            List<ScriptLine> script = [];
+            List<string> errors = [];
+            var emptyline = ScriptUtil.EmptyLineRegex();
+            var syntax = SyntaxRegex();
 
-            foreach (var line in lines)
+            for (int i = 0; i < rows.Count; i++)
             {
-                if(!SyntaxRegex().IsMatch(line))
-                    return null;
-
-                var splitted = line.Split(',');
-                result.Add(new ScriptLine()
+                if (emptyline.IsMatch(rows[i]))
                 {
-                    InternalTime = int.Parse(splitted[0]),
+                    errors.Add($"{i + 1}行目: 空行です！");
+                    continue;
+                }
+
+                if (!syntax.IsMatch(rows[i]))
+                {
+                    errors.Add($"{i + 1}行目: 構文エラー");
+                    continue;
+                }
+
+                var splitted = rows[i].Split(',');
+                var d = decimal.Parse(splitted[0]);
+                int time = decimal.ToInt32(d * 100);
+
+                script.Add(new ScriptLine()
+                {
+                    InternalTime = time,
                     Frequency = int.Parse(splitted[1]),
-                    Strength = int.Parse(splitted[2])
+                    Strength = int.Parse(splitted[2]),
                 });
             }
 
-            return new CoyoteScript()
+            return new ScriptAndErrors(errors.Count == 0 ? new CoyoteScript
             {
-                _scriptData = result,
+                _scriptData = script,
                 FileName = Path.GetFileName(path),
                 FilePath = path
-            };
+            } : null, errors);
         }
 
         public IDataPointProvider[] ToPlot()
