@@ -1,14 +1,5 @@
-﻿using OxyPlot;
-using Scry1ScriptTools.Core.Control;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Core.Script
 {
@@ -16,7 +7,7 @@ namespace Core.Script
     {
         #region Public Methods
 
-        public static IScript? LoadScript(string path)
+        public static IScript? LoadScript(string path, out string? error)
         {
             try
             {
@@ -31,17 +22,13 @@ namespace Core.Script
                     result ??= Vorze_SA.LoadScript(path);
                     result ??= TimeRoter.LoadScript(path);
                 }
+                error = null;
                 return result;
             }
             catch (Exception e)
             {
-#if DEBUG
-                Debug.WriteLine(e);
-                throw;
-#else
-                MessageBox.Show("ファイル読み込み時に例外が発生しました：" + e);
+                error = e.ToString();
                 return null;
-#endif
             }
         }
 
