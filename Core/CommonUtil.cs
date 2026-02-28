@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 namespace Core
 {
     public enum FileType { Media, Script, Other };
+    public enum ScriptType { Vorze, TimeRoter, Funscript, CoyoteScript }
 
     public static class CommonUtil
     {
@@ -42,6 +43,21 @@ namespace Core
                 return FileType.Script;
             else
                 return FileType.Other;
+        }
+
+        public static double Normalize(double value, double oldMax, double oldMin, double newMax, double newMin)
+        {
+            if (value == 0) return 0;
+            if (value > oldMax) value = oldMax;
+            if (value < oldMin) value = oldMin;
+
+            double oldRange = oldMax - oldMin;
+            double newRange = newMax - newMin;
+
+            if (oldRange <= 0 || newRange <= 0) return newMax;
+
+            double newValue = (((value - oldMin) * newRange) / oldRange) + newMin;
+            return newValue;
         }
 
         #endregion

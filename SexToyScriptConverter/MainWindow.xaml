@@ -74,17 +74,19 @@
                         Width="160"
                         Margin="4"
                         SelectionChanged="TargetScriptTypeComboBox_SelectionChanged">
-                        <ComboBoxItem x:Name="VorzeSAComboBoxItem" IsSelected="True">A10サイクロンSA・UFOSA</ComboBoxItem>
+                        <!--<ComboBoxItem x:Name="VorzeSAComboBoxItem" Visibility="Hidden">A10サイクロンSA・UFOSA</ComboBoxItem>
                         <ComboBoxItem x:Name="TimeRoterComboBoxItem">タイムローター</ComboBoxItem>
-                        <ComboBoxItem x:Name="FunscriptComboBoxItem">Funscript</ComboBoxItem>
-                        <ComboBoxItem x:Name="CoyoteScriptComboBoxItem">CoyoteScript</ComboBoxItem>
+                        <ComboBoxItem x:Name="FunscriptComboBoxItem">Funscript</ComboBoxItem>-->
+                        <ComboBoxItem x:Name="CoyoteScriptComboBoxItem" IsSelected="True">CoyoteScript</ComboBoxItem>
                     </ComboBox>
                     <ComboBox
                         x:Name="ConvertMethodComboBox"
                         Width="100"
                         Margin="4"
                         SelectionChanged="ConvertMethodComboBox_SelectionChanged">
-                        <ComboBoxItem IsSelected="True">上昇</ComboBoxItem>
+                        <ComboBoxItem x:Name="ReproduceSpeedComboBoxItem" IsSelected="True">速度再現</ComboBoxItem>
+                        <ComboBoxItem x:Name="UpComboBoxItem">上昇</ComboBoxItem>
+                        <ComboBoxItem x:Name="DownComboBoxItem">下降</ComboBoxItem>
                     </ComboBox>
                     <TextBlock
                         HorizontalAlignment="Center"
