@@ -3,5 +3,6 @@
     <File Path=".gitignore" />
   </Folder>
   <Project Path="Core/Core.csproj" />
+  <Project Path="SexToyScriptConverter/SexToyScriptConverter.csproj" Id="e0e98ff2-e900-49d5-bd62-75d06e4aa4ae" />
   <Project Path="SexToyScriptViewer/SexToyScriptViewer.csproj" />
 </Solution>
