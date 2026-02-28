@@ -69,6 +69,16 @@ namespace SexToyScriptViewer.Controllers
 
                 if (zoomMin > 0 | zoomMax > 0)
                     c.ZoomTimeAxis(zoomMin, zoomMax);
+
+                switch (_parent.TimeAxisMode)
+                {
+                    case (TimeAxisModeEnum.HHMMSS):
+                        SetTimeAxisHHMMSS();
+                        break;
+                    default:
+                        SetTimeAxisInternal();
+                        break;
+                }
             }
         }
 
@@ -111,13 +121,13 @@ namespace SexToyScriptViewer.Controllers
             }
         }
 
-        public void OnRadioButtonHHMMSSChecked()
+        public void SetTimeAxisHHMMSS()
         {
             foreach (var c in _chartControls)
                 c.SetTimeAxisLabelHHMMSS();
         }
 
-        public void OnRadioButtonInternalTimeChecked()
+        public void SetTimeAxisInternal()
         {
             foreach (var c in _chartControls)
                 c.SetTimeAxisLabelScriptTime();

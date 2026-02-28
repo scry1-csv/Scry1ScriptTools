@@ -3,6 +3,8 @@ using SexToyScriptViewer.Controllers;
 
 namespace SexToyScriptViewer
 {
+    internal enum TimeAxisModeEnum { HHMMSS, Internal }
+
     internal class Controller : IController
     {
         #region Public Properties
@@ -12,6 +14,8 @@ namespace SexToyScriptViewer
         public FileController File { get; }
 
         public bool IsUserDragging { get; set; } = false;
+        public TimeAxisModeEnum TimeAxisMode { get; set; } = TimeAxisModeEnum.HHMMSS; 
+
 
         #endregion
 
@@ -39,8 +43,16 @@ namespace SexToyScriptViewer
         public void ReloadChart(ChartControl control) => Chart.ReloadChart(control);
         public void LoadMedia(string path) => MainWindow.MediaPlayer.LoadMedia(path);
         public void OnOpenButtonClicked() => File.OnOpenButtonClicked();
-        public void OnRadioButtonHHMMSSChecked() => Chart.OnRadioButtonHHMMSSChecked();
-        public void OnRadioButtonInternalTimeChecked() => Chart.OnRadioButtonInternalTimeChecked();
+        public void OnRadioButtonHHMMSSChecked()
+        {
+            TimeAxisMode = TimeAxisModeEnum.HHMMSS;
+            Chart.SetTimeAxisHHMMSS();
+        }
+        public void OnRadioButtonInternalTimeChecked()
+        {
+            TimeAxisMode = TimeAxisModeEnum.Internal;
+            Chart.SetTimeAxisInternal();
+        }
 
         #endregion
     }
