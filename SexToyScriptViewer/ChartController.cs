@@ -3,7 +3,7 @@ using Core.Control;
 using Core.Script;
 using System.Windows;
 
-namespace SexToyScriptViewer.Controllers
+namespace SexToyScriptViewer
 {
     internal class ChartController
     {
@@ -11,10 +11,8 @@ namespace SexToyScriptViewer.Controllers
 
         private readonly Controller _parent;
         
-        private readonly List<ChartControl> _chartControls = new();
+        private readonly ChartSyncManager _syncManager = new();
         private readonly Dictionary<ChartControl, string> _chartFilePaths = new();
-        private double zoomMin = 0;
-        private double zoomMax = 0;
 
         #endregion
 
@@ -31,24 +29,19 @@ namespace SexToyScriptViewer.Controllers
 
         public void CloseChart(ChartControl control)
         {
-            _chartControls.Remove(control);
+            _syncManager.RemoveChart(control);
             _chartFilePaths.Remove(control);
             RefleshCharts();
         }
 
         public void SyncChartsRange(ChartControl sender, double min, double max)
         {
-            zoomMin = min;
-            zoomMax = max;
-            foreach (var item in _chartControls)
-                if (item != sender)
-                    item.ZoomTimeAxis(min, max);
+            _syncManager.SyncChartsRange(sender, min, max);
         }
 
         public void MovePlayingAnnotations(double milliseconds)
         {
-            foreach (var c in _chartControls)
-                c.MovePlayingAnnotation(milliseconds);
+            _syncManager.MovePlayingAnnotations(milliseconds);
         }
 
         public void RefleshCharts()
@@ -57,18 +50,18 @@ namespace SexToyScriptViewer.Controllers
             _parent.MainWindow.ChartsPanel.RowDefinitions.Clear();
 
             int i = 0;
-            foreach (var c in _chartControls)
+            foreach (var c in _syncManager.ChartControls)
             {
                 System.Windows.Controls.RowDefinition row = new();
                 if (c.IsDualChart) row.Height = new GridLength(1.55, GridUnitType.Star);
                 _parent.MainWindow.ChartsPanel.RowDefinitions.Add(row);
 
-                System.Windows.Controls.Grid.SetRow(_chartControls[i], i);
-                _parent.MainWindow.ChartsPanel.Children.Add(_chartControls[i]);
+                System.Windows.Controls.Grid.SetRow(c, i);
+                _parent.MainWindow.ChartsPanel.Children.Add(c);
                 i++;
 
-                if (zoomMin > 0 | zoomMax > 0)
-                    c.ZoomTimeAxis(zoomMin, zoomMax);
+                if (_syncManager.ZoomMin > 0 | _syncManager.ZoomMax > 0)
+                    c.ZoomTimeAxis(_syncManager.ZoomMin, _syncManager.ZoomMax);
 
                 switch (_parent.TimeAxisMode)
                 {
@@ -94,11 +87,10 @@ namespace SexToyScriptViewer.Controllers
             ChartControl control = new();
             control.ReloadChartRequested += (s, e) => ReloadChart(control);
             control.CloseChartRequested += (s, e) => CloseChart(control);
-            control.SyncChartsRangeRequested += (s, e) => SyncChartsRange(control, e.Min, e.Max);
             control.IsUserDraggingChanged += (s, e) => _parent.IsUserDragging = e;
             InitializeChartControlWithScript(control, scriptAndErrors.Script);
 
-            _chartControls.Add(control);
+            _syncManager.AddChart(control);
             _chartFilePaths[control] = path;
 
             if (_parent.MainWindow.RadioButton_HHMMSS.IsChecked ?? false)
@@ -127,14 +119,12 @@ namespace SexToyScriptViewer.Controllers
 
         public void SetTimeAxisHHMMSS()
         {
-            foreach (var c in _chartControls)
-                c.SetTimeAxisLabelHHMMSS();
+            _syncManager.SetTimeAxisHHMMSS();
         }
 
         public void SetTimeAxisInternal()
         {
-            foreach (var c in _chartControls)
-                c.SetTimeAxisLabelInternalTime();
+            _syncManager.SetTimeAxisInternal();
         }
 
         #endregion

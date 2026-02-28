@@ -1,5 +1,6 @@
-﻿using Core.Control;
-using SexToyScriptConverter.Controllers;
+﻿using Core;
+using Core.Control;
+using Microsoft.Win32;
 
 namespace SexToyScriptConverter
 {
@@ -11,7 +12,6 @@ namespace SexToyScriptConverter
 
         public MainWindow MainWindow { get; }
         public ChartController Chart { get; }
-        public FileController File { get; }
 
         public bool IsUserDragging { get; set; } = false;
         public TimeAxisModeEnum TimeAxisMode { get; set; } = TimeAxisModeEnum.HHMMSS;
@@ -26,7 +26,6 @@ namespace SexToyScriptConverter
             MainWindow = mainWindow;
 
             Chart = new ChartController(this);
-            File = new FileController(this);
         }
 
         #endregion
@@ -35,11 +34,25 @@ namespace SexToyScriptConverter
 
         public void SyncChartsRange(ChartControl sender, double min, double max) => Chart.SyncChartsRange(sender, min, max);
         public void MovePlayingAnnotations(double milliseconds) => Chart.MovePlayingAnnotations(milliseconds);
-        public void OnFileDropped(string[] dropped) => File.OnFileDropped(dropped);
-        public void OpenFile(string path) => File.OpenFile(path);
         public void OpenScript(string path) => Chart.OpenScript(path);
         public void LoadMedia(string path) => MainWindow.MediaPlayer.LoadMedia(path);
-        public void OnOpenButtonClicked() => File.OnOpenButtonClicked();
+
+        public void OnOpenButtonClicked()
+        {
+            MainWindow.MediaPlayer.Stop();
+
+            OpenFileDialog dlg = new() { Filter = CommonUtil.FileDialogFilter };
+            bool? result = dlg.ShowDialog();
+            if (result == true)
+                OpenFile(dlg.FileName);
+        }
+
+        public void OnFileDropped(string[] dropped)
+        {
+            foreach (string item in dropped)
+                OpenFile(item);
+        }
+
         public void OnRadioButtonHHMMSSChecked()
         {
             TimeAxisMode = TimeAxisModeEnum.HHMMSS;
@@ -49,6 +62,26 @@ namespace SexToyScriptConverter
         {
             TimeAxisMode = TimeAxisModeEnum.Internal;
             Chart.SetTimeAxisInternal();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void OpenFile(string path)
+        {
+            switch (CommonUtil.DetectFileType(path))
+            {
+                case FileType.Media:
+                    LoadMedia(path);
+                    break;
+                case FileType.Script:
+                    Chart.OpenScript(path);
+                    break;
+                default:
+                    CommonUtil.ShowMessageBoxTopMost($"対応していないファイル形式です:\n{path}");
+                    break;
+            }
         }
 
         #endregion

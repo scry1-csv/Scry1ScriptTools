@@ -3,7 +3,7 @@ using Core.Control;
 using Core.Script;
 using System.Windows;
 
-namespace SexToyScriptConverter.Controllers
+namespace SexToyScriptConverter
 {
     public class ChartController
     {
@@ -11,9 +11,7 @@ namespace SexToyScriptConverter.Controllers
         #region Private Fields and Properties
 
         private readonly Controller _parent;
-        private readonly List<ChartControl> _chartControls = [];
-        private double zoomMin = 0;
-        private double zoomMax = 0;
+        private readonly ChartSyncManager _syncManager = new();
 
         private readonly ChartControl originChart;
         private readonly ChartControl convertedChart;
@@ -31,8 +29,8 @@ namespace SexToyScriptConverter.Controllers
             originChart.HideButtons();
             convertedChart.HideFileInfoPanel();
 
-            _chartControls.Add(originChart);
-            _chartControls.Add(convertedChart);
+            _syncManager.AddChart(originChart);
+            _syncManager.AddChart(convertedChart);
         }
 
         #endregion
@@ -41,17 +39,12 @@ namespace SexToyScriptConverter.Controllers
 
         public void SyncChartsRange(ChartControl sender, double min, double max)
         {
-            zoomMin = min;
-            zoomMax = max;
-            foreach (var item in _chartControls)
-                if (item != sender)
-                    item.ZoomTimeAxis(min, max);
+            _syncManager.SyncChartsRange(sender, min, max);
         }
 
         public void MovePlayingAnnotations(double milliseconds)
         {
-            foreach (var c in _chartControls)
-                c.MovePlayingAnnotation(milliseconds);
+            _syncManager.MovePlayingAnnotations(milliseconds);
         }
 
         public void OpenScript(string path)
@@ -63,11 +56,9 @@ namespace SexToyScriptConverter.Controllers
                 return;
             }
 
-            originChart.SyncChartsRangeRequested += (s, e) => SyncChartsRange(originChart, e.Min, e.Max);
             InitializeChartControlWithScript(originChart, scriptAndErrors.Script);
             originChart.Visibility = Visibility.Visible;
-
-            convertedChart.SyncChartsRangeRequested += (s, e) => SyncChartsRange(convertedChart, e.Min, e.Max);            
+            
             InitializeChartControlWithScript(convertedChart, scriptAndErrors.Script);
             convertedChart.Visibility = Visibility.Visible;
 
@@ -86,14 +77,12 @@ namespace SexToyScriptConverter.Controllers
 
         public void SetTimeAxisHHMMSS()
         {
-            foreach (var c in _chartControls)
-                c.SetTimeAxisLabelHHMMSS();
+            _syncManager.SetTimeAxisHHMMSS();
         }
 
         public void SetTimeAxisInternal()
         {
-            foreach (var c in _chartControls)
-                c.SetTimeAxisLabelInternalTime();
+            _syncManager.SetTimeAxisInternal();
         }
 
         #endregion
