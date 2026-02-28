@@ -1,4 +1,4 @@
-﻿namespace Scry1ScriptTools.Core.Script
+﻿namespace Core.Script
 {
     internal interface IScriptDataPoint
     {

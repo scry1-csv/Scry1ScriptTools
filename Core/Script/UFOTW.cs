@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Scry1ScriptTools.Core.Script
+namespace Core.Script
 {
     public partial class UFOTW : IScript
     {

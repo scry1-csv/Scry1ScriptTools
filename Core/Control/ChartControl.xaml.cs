@@ -6,11 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Scry1ScriptTools.Core.Control
+namespace Core.Control
 {
-    /// <summary>
-    /// OxyChart.xaml の相互作用ロジック
-    /// </summary>
     public partial class ChartControl : UserControl
     {
         #region Private Fields

@@ -1,9 +1,4 @@
-﻿using Scry1ScriptTools.Core.Control;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Core.Control
+﻿namespace Core.Control
 {
     public interface IController
     {

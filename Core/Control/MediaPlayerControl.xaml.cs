@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace Scry1ScriptTools.Core.Control
+namespace Core.Control
 {
     /// <summary>
     /// メディア再生機能とシークバー同期を担うUserControl。

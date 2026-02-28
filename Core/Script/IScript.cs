@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scry1ScriptTools.Core.Script
+namespace Core.Script
 {
     public interface IScript
     {

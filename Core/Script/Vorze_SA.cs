@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Scry1ScriptTools.Core.Script
+namespace Core.Script
 {
     partial class Vorze_SA : IScript
     {

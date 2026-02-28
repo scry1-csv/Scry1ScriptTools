@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Navigation;
 
-namespace Scry1ScriptTools.Core.Script
+namespace Core.Script
 {
 
     class Funscript : IScript

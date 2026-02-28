@@ -1,5 +1,4 @@
 using Core.Control;
-using Scry1ScriptTools.Core.Control;
 using SexToyScriptViewer.Controllers;
 
 namespace SexToyScriptViewer

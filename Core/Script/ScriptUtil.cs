@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Scry1ScriptTools.Core.Script
+namespace Core.Script
 {
     public partial class ScriptUtil
     {

@@ -1,10 +1,7 @@
-using Scry1ScriptTools.Core.Control;
-using Scry1ScriptTools.Core.Script;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using Core;
+using Core.Control;
+using Core.Script;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace SexToyScriptViewer.Controllers
 {
