@@ -77,7 +77,7 @@ namespace SexToyScriptViewer.Controllers
             var script = ScriptUtil.LoadScript(path, out string? error);
             if (script == null)
             {
-                Util.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{error}");
+                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{error}");
                 return;
             }
             
@@ -102,7 +102,7 @@ namespace SexToyScriptViewer.Controllers
                 var script = ScriptUtil.LoadScript(path, out string ? error);
                 if (script == null)
                 {
-                    Util.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{error}");
+                    CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{error}");
                     return;
                 }
 

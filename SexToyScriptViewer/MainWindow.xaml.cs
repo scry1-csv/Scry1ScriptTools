@@ -1,10 +1,4 @@
-﻿using Microsoft.Win32;
-using Scry1ScriptTools.Core.Control;
-using Scry1ScriptTools.Core.Script;
-using System;
-using System.IO;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 
 namespace SexToyScriptViewer
 {

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SexToyScriptViewer"
-    xmlns:localControl="clr-namespace:Scry1ScriptTools.Core.Control;assembly=Core"
+    xmlns:localControl="clr-namespace:Core.Control;assembly=Core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"
     xmlns:vm="clr-namespace:SexToyScriptViewer"
@@ -22,10 +22,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Core の MediaPlayerControl を使用する -->
-        <localControl:MediaPlayerControl
-            x:Name="MediaPlayer"
-            Grid.Row="0" />
+        <!--  Core の MediaPlayerControl を使用する  -->
+        <localControl:MediaPlayerControl x:Name="MediaPlayer" Grid.Row="0" />
 
         <DockPanel Grid.Row="1">
 

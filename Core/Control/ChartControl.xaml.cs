@@ -1,5 +1,4 @@
-﻿using Core.Control;
-using OxyPlot.Annotations;
+﻿using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System.Windows;

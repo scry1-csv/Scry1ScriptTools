@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace Core
 {
-    public static class Util
+    public static class CommonUtil
     {
         #region Public Fields
 

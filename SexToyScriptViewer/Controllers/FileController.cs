@@ -33,7 +33,7 @@ namespace SexToyScriptViewer.Controllers
                     parent.LoadMedia(path);
                     break;
                 default:
-                    Util.ShowMessageBoxTopMost("対応していないファイル形式です");
+                    CommonUtil.ShowMessageBoxTopMost("対応していないファイル形式です");
                     break;
             }
         }
@@ -42,7 +42,7 @@ namespace SexToyScriptViewer.Controllers
         {
             parent.MainWindow.MediaPlayer.Stop();
 
-            OpenFileDialog dlg = new() { Filter = Util.FileDialogFilter };
+            OpenFileDialog dlg = new() { Filter = CommonUtil.FileDialogFilter };
             bool? result = dlg.ShowDialog();
             if (result == true)
                 OpenFile(dlg.FileName);
