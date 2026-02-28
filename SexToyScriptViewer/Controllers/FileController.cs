@@ -10,10 +10,9 @@ namespace SexToyScriptViewer.Controllers
 
         public void OnFileDropped(string[] dropped)
         {
-            if (dropped.Length == 1)
-                OpenFile(dropped[0]);
-            else
-                Util.ShowMessageBoxTopMost("開けるのは同時に一つのファイルだけです！");
+            foreach (string item in dropped) 
+                OpenFile(item);
+
         }
 
         public void OpenFile(string path)
