@@ -12,10 +12,6 @@
 		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Controllers\" />
-	</ItemGroup>
-
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<DebugType>full</DebugType>
 	</PropertyGroup>
