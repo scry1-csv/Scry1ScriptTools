@@ -1,12 +1,17 @@
-﻿using Core.Script;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Core;
+using Core.Script;
+using System.Collections.Immutable;
 
 namespace SexToyScriptConverter.Converter
 {
     public static class VorzeToCoyote
     {
+        public record ConverterData(Func<Vorze_SA, CoyoteScript> Converter, string Name);
+
+        public static readonly ImmutableArray<ConverterData> Converters = [
+            new(ConvertUp, "上昇")
+            ];
+
         public static CoyoteScript ConvertUp(Vorze_SA vorze)
         {
             var origin = vorze.ScriptData.ToArray();
@@ -21,7 +26,7 @@ namespace SexToyScriptConverter.Converter
             foreach (var row in origin)
                 if (row.Power != 0)
                     if (oldmax - oldmin != 0)
-                        row.Power = (int)((row.Power - oldmin) * (newmax - newmin) / (double)(oldmax - oldmin) + newmin);
+                        row.Power = (int)CommonUtil.Normalize(row.Power, oldmax, oldmin, newmax, newmin);
                     else
                         row.Power = newmin;
 

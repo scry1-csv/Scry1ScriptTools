@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:SexToyScriptConverter"
     xmlns:localControl="clr-namespace:Core.Control;assembly=Core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:properties="clr-namespace:SexToyScriptConverter.Properties"
     Title="SexToyScriptConverter"
     Width="800"
     Height="600"
@@ -71,17 +72,20 @@
                     </TextBlock>
                     <ComboBox
                         x:Name="TargetScriptTypeComboBox"
-                        Width="160"
+                        Width="150"
                         Margin="4"
                         SelectionChanged="TargetScriptTypeComboBox_SelectionChanged">
-                        <!--<ComboBoxItem x:Name="VorzeSAComboBoxItem" Visibility="Hidden">A10サイクロンSA・UFOSA</ComboBoxItem>
+                        <!--<ComboBoxItem x:Name="VorzeComboBoxItem" Visibility="Hidden">A10サイクロンSA・UFOSA</ComboBoxItem>
                         <ComboBoxItem x:Name="TimeRoterComboBoxItem">タイムローター</ComboBoxItem>
                         <ComboBoxItem x:Name="FunscriptComboBoxItem">Funscript</ComboBoxItem>-->
-                        <ComboBoxItem x:Name="CoyoteScriptComboBoxItem" IsSelected="True">CoyoteScript</ComboBoxItem>
+                        <ComboBoxItem
+                            x:Name="CoyoteScriptComboBoxItem"
+                            Content="{x:Static properties:Resources.CoyoteScriptComboBoxItem}"
+                            IsSelected="True" />
                     </ComboBox>
                     <ComboBox
                         x:Name="ConvertMethodComboBox"
-                        Width="100"
+                        Width="150"
                         Margin="4"
                         SelectionChanged="ConvertMethodComboBox_SelectionChanged">
                         <ComboBoxItem x:Name="ReproduceSpeedComboBoxItem" IsSelected="True">速度再現</ComboBoxItem>

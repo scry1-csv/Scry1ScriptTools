@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace SexToyScriptConverter
 {
@@ -50,15 +52,17 @@ namespace SexToyScriptConverter
                 _controller.OnFileDropped(dropped);
         }
 
-        private void TargetScriptTypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void TargetScriptTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            var combobox = sender as ComboBox;
+            var selectedItem = combobox?.SelectedValue as string;
+            _controller?.OnTargetScriptTypeComboBoxSelectionChanged(selectedItem);
         }
 
 
-        private void ConvertMethodComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ConvertMethodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            _controller?.OnConvertMethodComboBoxSelectionChanged();
         }
 
         #endregion

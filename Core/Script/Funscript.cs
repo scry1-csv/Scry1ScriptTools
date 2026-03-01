@@ -17,9 +17,9 @@ namespace Core.Script
 
         #endregion
 
-        #region Private Fields
+        #region Public Properties
 
-        private readonly FunscriptJson Data;
+        public FunscriptJson Data { get; }
         private static readonly JsonSerializerOptions options = new()
         {
             AllowTrailingCommas = true

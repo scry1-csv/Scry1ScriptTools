@@ -21,5 +21,6 @@ namespace Core.Script
         public abstract int MillisecondsToInternalTime(double milliseconds);
         public abstract IDataPointProvider[] ToPlot();
 
+        public ScriptType ScriptType => CommonUtil.GetScriptTypeFromScript(this);
     }
 }

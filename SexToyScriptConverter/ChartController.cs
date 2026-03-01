@@ -47,25 +47,10 @@ namespace SexToyScriptConverter
             _syncManager.MovePlayingAnnotations(milliseconds);
         }
 
-        public void OpenScript(string path)
+        public void SetOrigin(IScript script)
         {
-            var scriptAndErrors = ScriptUtil.LoadScript(path);
-            if (scriptAndErrors.Script == null)
-            {
-                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
-                return;
-            }
-
-            _parent.MainWindow.ConvertSettingPanel.Visibility = Visibility.Visible;
-
-            InitializeChartControlWithScript(originChart, scriptAndErrors.Script);
-            originChart.Visibility = Visibility.Visible;
-
-            if (scriptAndErrors.Script is Vorze_SA vorze)
-                InitializeChartControlWithScript(convertedChart, Converter.VorzeToCoyote.ConvertUp(vorze));
-
-            convertedChart.Visibility = Visibility.Visible;
-
+            InitializeChartControlWithScript(originChart, script);
+            
             switch(_parent.TimeAxisMode)
             {
                 case (TimeAxisModeEnum.HHMMSS):
@@ -76,6 +61,29 @@ namespace SexToyScriptConverter
                     SetTimeAxisInternal();
                     break;
             }
+
+            originChart.Visibility = Visibility.Visible;
+        }
+
+        public void SetConverted(IScript script)
+        {
+            InitializeChartControlWithScript(convertedChart, script);
+
+            switch (_parent.TimeAxisMode)
+            {
+                case (TimeAxisModeEnum.HHMMSS):
+                    SetTimeAxisHHMMSS();
+                    break;
+
+                default:
+                    SetTimeAxisInternal();
+                    break;
+            }
+
+            if (_syncManager.ZoomMin > 0 | _syncManager.ZoomMax > 0)
+                convertedChart.ZoomTimeAxis(_syncManager.ZoomMin, _syncManager.ZoomMax);
+
+            convertedChart.Visibility = Visibility.Visible;
         }
 
         public void SetTimeAxisHHMMSS()

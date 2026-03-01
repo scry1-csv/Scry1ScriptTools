@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Collections.Immutable;
+using Core.Script;
 
 namespace Core
 {
@@ -31,6 +32,18 @@ namespace Core
         public static void ShowMessageBoxTopMost(string message)
         {
             MessageBox.Show(message, "エラー", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+        }
+
+        public static ScriptType GetScriptTypeFromScript(IScript Script)
+        {
+            return Script switch
+            {
+                Vorze_SA => ScriptType.Vorze,
+                TimeRoter => ScriptType.TimeRoter,
+                Funscript => ScriptType.Funscript,
+                CoyoteScript => ScriptType.CoyoteScript,
+                _ => throw new NotImplementedException()
+            };
         }
 
         public static FileType DetectFileType(string path)
