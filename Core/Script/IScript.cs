@@ -17,12 +17,12 @@ namespace Core.Script
         public abstract string TrackerFormatString { get; }
 
         public abstract string LabelFormatter_ScriptTime(double seconds);
-        
+
         public abstract int MillisecondsToInternalTime(double milliseconds);
         public abstract IDataPointProvider[] ToPlot();
         public abstract void SaveScript(string path);
 
 
-        public ScriptType ScriptType => CommonUtil.GetScriptTypeFromScript(this);
+        public ScriptType ScriptType => ScriptUtil.GetScriptTypeFromScript(this);
     }
 }

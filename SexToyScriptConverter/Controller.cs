@@ -116,14 +116,14 @@ namespace SexToyScriptConverter
             MainWindow.MediaPlayer.Stop();
 
             var dir = Path.GetDirectoryName(OriginScript.FilePath);
-            var ext = CommonUtil.TypeExtentionMap[ConvertedScript.ScriptType];
+            var ext = ScriptUtil.TypeExtentionMap[ConvertedScript.ScriptType];
             var name = $"{Path.GetFileNameWithoutExtension(OriginScript.FilePath)}_{methodStr}";
             var path = $"{dir}\\{name}{ext}"; ;
 
-            int i = 1 ;
+            int i = 1;
             while (File.Exists(path))
                 path = $"{dir}\\{name}({i++}){ext}"; ;
-           
+
             try
             {
                 ConvertedScript.SaveScript(path);
@@ -158,6 +158,15 @@ namespace SexToyScriptConverter
 
         public void OnConvertMethodComboBoxSelectionChanged()
         {
+            Convert();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Convert()
+        {
             var t = MainWindow.TargetScriptTypeComboBox.SelectedValue as ComboBoxItem;
             var targetStr = t?.Content.ToString();
             var methodStr = MainWindow.ConvertMethodComboBox.SelectedValue as string;
@@ -171,17 +180,20 @@ namespace SexToyScriptConverter
 
             IScript? converted = null;
 
-            if (OriginScript is Funscript origin)
+            if (OriginScript is Funscript fun)
+            {
                 if (targetType == ScriptType.CoyoteScript)
-                    converted = FunscriptToCoyote.Converters.Where(x => x.Name == methodStr).First().Method(origin);
+                    converted = FunscriptToCoyote.Converters.Where(x => x.Name == methodStr).First().Method(fun);
+            }
+            else if (OriginScript is Vorze_SA vorze)
+            {
+                if (targetType == ScriptType.CoyoteScript)
+                    converted = VorzeToCoyote.Converters.Where(x => x.Name == methodStr).First().Method(vorze);
+            }
 
             if (converted is not null)
                 ApplyConverted(converted);
         }
-
-        #endregion
-
-        #region Private Methods
 
         private void OpenFile(string path)
         {
@@ -202,7 +214,7 @@ namespace SexToyScriptConverter
         private void ApplyConverted(IScript script)
         {
             ConvertedScript = script;
- 
+
             IDataPointProvider[]? itemsSource2 = null;
             List<(double start, double end)>? differenceRanges = null;
             if (OriginScript is UFOTW u)
@@ -241,7 +253,11 @@ namespace SexToyScriptConverter
                 script.ToPlot(), itemsSource2, script.LabelFormatter_ScriptTime, differenceRanges);
             ApplyTimeAxisMode();
             DisplayConverters(script.ScriptType);
+
+            Convert();
+
             MainWindow.ConvertSettingPanel.Visibility = Visibility.Visible;
+            MainWindow.BottomSettingsPanel.Visibility = Visibility.Visible;
         }
 
         private ScriptType? GetScriptTypeFromResourceString(string? str)
