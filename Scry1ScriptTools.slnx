@@ -1,18 +1,9 @@
 <Solution>
-  <Folder Name="/Converters_Python/">
-    <File Path="Converters_Python1/coyotescript_to_timeroter.py" />
-    <File Path="Converters_Python1/coyotescript_to_timeroter_non100_0.py" />
-    <File Path="Converters_Python1/funscript_to_coyotescript.py" />
-    <File Path="Converters_Python1/funscript_to_coyotescript2.py" />
-    <File Path="Converters_Python1/funscript_to_coyotescript_stroke.py" />
-    <File Path="Converters_Python1/vorze_to_coyoteScript.py" />
-    <File Path="Converters_Python1/vorze_to_coyoteScript_down.py" />
-    <File Path="Converters_Python1/vorze_to_coyoteScript_up.py" />
-  </Folder>
   <Folder Name="/ソリューション項目/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="AGENTS.md" />
+    <File Path="README.md" />
   </Folder>
   <Project Path="Core/Core.csproj" />
   <Project Path="SexToyScriptConverter/SexToyScriptConverter.csproj" Id="e0e98ff2-e900-49d5-bd62-75d06e4aa4ae" />
