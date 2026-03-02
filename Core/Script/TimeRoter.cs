@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
-    public partial class TimeRoter(List<TimeRoter.ScriptLine> scriptData, string fileName, string filePath) : IScript
+    public partial class TimeRoter(List<TimeRoter.ScriptRow> scriptData, string fileName, string filePath) : IScript
     {
         #region Static Fields
 
@@ -42,7 +42,7 @@ namespace Core.Script
 
             var rows = ScriptUtil.RawCsvToLines(csv_str);
 
-            List<ScriptLine> script = [];
+            List<ScriptRow> script = [];
             List<string> errors = [];
             var emptyline = ScriptUtil. EmptyLineRegex();
             var syntax = SyntaxRegex();
@@ -65,7 +65,7 @@ namespace Core.Script
                 var d = decimal.Parse(splitted[0]);
                 int time = decimal.ToInt32(d * 100);
 
-                script.Add(new ScriptLine()
+                script.Add(new ScriptRow()
                 {
                     InternalTime = time,
                     Power = int.Parse(splitted[1])
@@ -77,6 +77,16 @@ namespace Core.Script
                 Path.GetFileName(path),
                 path
             ) : null, errors);
+        }
+
+        public void SaveScript(string path)
+        {
+            StringBuilder sb = new();
+
+            foreach (var row in scriptData)
+                sb.AppendLine($"{row.CsvTime},{row.Power}");
+
+            File.WriteAllText(path, sb.ToString());
         }
 
         public IDataPointProvider[] ToPlot()
@@ -109,13 +119,14 @@ namespace Core.Script
         /// <summary>
         /// csvの行のデータを保持する構造体
         /// </summary>
-        public struct ScriptLine
+        public struct ScriptRow
         {
             /// <summary>1/100秒単位</summary>
             public int InternalTime;
             /// <summary>0～1000まで</summary>
             public int Power;
             public readonly double Milliseconds { get => (double)InternalTime * 10; }
+            public readonly string CsvTime { get => $"{(InternalTime / 100):F2}"; }
 
             public override string ToString()
             {

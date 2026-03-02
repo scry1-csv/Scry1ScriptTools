@@ -15,15 +15,26 @@ namespace Core
         public static readonly ImmutableArray<string> ScriptExts = [".csv", ".coyotescript", ".funscript"];
         public static readonly ImmutableArray<string> Exts = ImmutableArray.Create(MediaExts.Concat(ScriptExts).ToArray());
 
+        public static Dictionary<ScriptType, string> TypeExtentionMap = new()
+        {
+            { ScriptType.Vorze, ".csv" },
+            { ScriptType.TimeRoter, ".csv" },
+            { ScriptType.Funscript, ".funscript" },
+            { ScriptType.CoyoteScript, ".coyotescript" }
+        };
+
         #endregion
 
         #region Public Properties
 
-        public static string FileDialogFilter { get
+        public static string FileDialogFilter
+        {
+            get
             {
-                string joined = string.Join(";", Exts.Select((s)=>"*"+s));
+                string joined = string.Join(";", Exts.Select((s) => "*" + s));
                 return $"スクリプト,音声,動画 ({joined})|{joined}";
-            } }
+            }
+        }
 
         #endregion
 

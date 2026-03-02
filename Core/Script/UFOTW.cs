@@ -21,7 +21,7 @@ namespace Core.Script
 
         // Dataに不適正な内容を直接加えることを防ぐため、隠蔽してメソッドで操作を提供する
         //private (List<SeparatedScriptLine> left, List<SeparatedScriptLine> right) _separatedScriptData = (new(), new());
-        private List<ScriptRow> _scriptData = new();
+        private List<ScriptRow> _scriptData = [];
 
         #endregion
 
@@ -152,6 +152,17 @@ namespace Core.Script
             return result.ToArray();
         }
 
+        public void SaveScript(string path)
+        {
+            StringBuilder sb = new();
+
+            foreach (var row in _scriptData)
+                sb.AppendLine($"{row.InternalTime},{row.CsvLeftDirection},{row.LeftPower},{row.CsvRightDirection},{row.RightPower}");
+
+            File.WriteAllText(path, sb.ToString());
+        }
+
+
 
         public IDataPointProvider[] ToPlotRight()
         {
@@ -206,6 +217,8 @@ namespace Core.Script
             public bool RightDirection;
             public int RightPower;
             public double Milliseconds { get => (double)InternalTime * 100; }
+            public string CsvLeftDirection { get => LeftDirection ? "1" : "0"; }
+            public string CsvRightDirection { get => RightDirection ? "1" : "0"; }
             public override string ToString()
             {
                 var builder = new StringBuilder();

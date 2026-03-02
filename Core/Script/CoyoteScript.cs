@@ -66,6 +66,16 @@ namespace Core.Script
             } : null, errors);
         }
 
+        public void SaveScript(string path)
+        {
+            StringBuilder sb = new();
+
+            foreach (var row in ScriptData)
+                sb.AppendLine($"{row.InternalTime},{row.Frequency},{row.Strength}");
+
+            File.WriteAllText(path, sb.ToString());
+        }
+
         public IDataPointProvider[] ToPlot()
         {
             List<CustomDataPoint> result = [new CustomDataPoint(0, 0)];

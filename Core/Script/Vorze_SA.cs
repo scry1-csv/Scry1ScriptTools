@@ -17,10 +17,6 @@ namespace Core.Script
 
         #endregion
 
-        #region Private Fields
-
-        #endregion
-
         #region Public Methods
 
         public int MillisecondsToInternalTime(double milliseconds)
@@ -76,6 +72,16 @@ namespace Core.Script
                 FileName = Path.GetFileName(path),
                 FilePath = path
             } : null, errors);
+        }
+
+        public void SaveScript(string path)
+        {
+            StringBuilder sb = new();
+
+            foreach (var row in ScriptData)
+                sb.AppendLine($"{row.InternalTime},{row.CsvDirection},{row.Power}");
+            
+            File.WriteAllText(path, sb.ToString());
         }
 
         public IDataPointProvider[] ToPlot()
@@ -142,6 +148,7 @@ namespace Core.Script
             public int InternalTime;
             public bool Direction;
             public int Power;
+            public string CsvDirection { get => Direction ? "1" : "0"; }
             public double Milliseconds => InternalTime * 100; 
             public override string ToString()
             {

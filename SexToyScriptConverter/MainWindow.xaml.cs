@@ -33,6 +33,7 @@ namespace SexToyScriptConverter
         #region XAML UI Event Handlers
 
         private void OpenButton_Click(object sender, RoutedEventArgs e) => _controller.OnOpenButtonClicked();
+        private void SaveButton_Click(object sender, RoutedEventArgs e) => _controller.OnSaveButtonClicked();
         private void RadioButton_HHMMSS_Checked(object sender, RoutedEventArgs e) => _controller?.OnRadioButtonHHMMSSChecked();
         private void RadioButton_InternalTime_Checked(object sender, RoutedEventArgs e) => _controller?.OnRadioButtonInternalTimeChecked();
 
@@ -66,6 +67,5 @@ namespace SexToyScriptConverter
         }
 
         #endregion
-
     }
 }

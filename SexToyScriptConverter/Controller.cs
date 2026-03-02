@@ -1,4 +1,4 @@
-﻿using Core;
+using Core;
 using Core.Control;
 using Core.Script;
 using Microsoft.Win32;
@@ -6,6 +6,8 @@ using OxyPlot;
 using SexToyScriptConverter.Converter;
 using SexToyScriptConverter.Properties;
 using System.Diagnostics;
+using System.IO;
+using System.Security;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -49,6 +51,7 @@ namespace SexToyScriptConverter
 
         private ScriptType GetTargetScriptType()
         {
+            // 現在はCoyoteScript以外に対応していないためコメントアウト
             //if (MainWindow.TargetScriptTypeComboBox.SelectedItem == MainWindow.VorzeComboBoxItem)
             //    return ScriptType.Vorze;
             //else if (MainWindow.TargetScriptTypeComboBox.SelectedItem == MainWindow.TimeRoterComboBoxItem)
@@ -102,6 +105,33 @@ namespace SexToyScriptConverter
             bool? result = dlg.ShowDialog();
             if (result == true)
                 OpenFile(dlg.FileName);
+        }
+
+        public void OnSaveButtonClicked()
+        {
+            if (ConvertedScript is null || OriginScript is null) return;
+            if (MainWindow.ConvertMethodComboBox.SelectedValue is not string methodStr)
+                return;
+
+            MainWindow.MediaPlayer.Stop();
+
+            var dir = Path.GetDirectoryName(OriginScript.FilePath);
+            var ext = CommonUtil.TypeExtentionMap[ConvertedScript.ScriptType];
+            var name = $"{Path.GetFileNameWithoutExtension(OriginScript.FilePath)}_{methodStr}";
+            var path = $"{dir}\\{name}{ext}"; ;
+
+            int i = 1 ;
+            while (File.Exists(path))
+                path = $"{dir}\\{name}({i++}){ext}"; ;
+           
+            try
+            {
+                ConvertedScript.SaveScript(path);
+            }
+            catch (Exception e)
+            {
+                CommonUtil.ShowMessageBoxTopMost("ファイルの書き込みに失敗しました:\n\n" + e.ToString());
+            }
         }
 
         public void OnFileDropped(string[] dropped)

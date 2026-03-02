@@ -48,6 +48,11 @@ namespace Core.Script
                 return new Funscript(result, Path.GetFileName(path), path);            
         }
 
+        public void SaveScript(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDataPointProvider[] ToPlot()
         {
             List<CustomDataPoint> result = new() { new(0, Data.Actions[0].Pos, 0) };
