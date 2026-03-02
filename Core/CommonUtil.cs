@@ -5,7 +5,6 @@ using Core.Script;
 namespace Core
 {
     public enum FileType { Media, Script, Other };
-    public enum ScriptType { Vorze, TimeRoter, Funscript, CoyoteScript }
 
     public static class CommonUtil
     {
@@ -14,14 +13,6 @@ namespace Core
         public static readonly ImmutableArray<string> MediaExts = [".mp3", ".m4a", ".wav", ".mp4", ".webm", ".mpg"];
         public static readonly ImmutableArray<string> ScriptExts = [".csv", ".coyotescript", ".funscript"];
         public static readonly ImmutableArray<string> Exts = ImmutableArray.Create(MediaExts.Concat(ScriptExts).ToArray());
-
-        public static Dictionary<ScriptType, string> TypeExtentionMap = new()
-        {
-            { ScriptType.Vorze, ".csv" },
-            { ScriptType.TimeRoter, ".csv" },
-            { ScriptType.Funscript, ".funscript" },
-            { ScriptType.CoyoteScript, ".coyotescript" }
-        };
 
         #endregion
 
@@ -43,18 +34,6 @@ namespace Core
         public static void ShowMessageBoxTopMost(string message)
         {
             MessageBox.Show(message, "エラー", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-        }
-
-        public static ScriptType GetScriptTypeFromScript(IScript Script)
-        {
-            return Script switch
-            {
-                Vorze_SA => ScriptType.Vorze,
-                TimeRoter => ScriptType.TimeRoter,
-                Funscript => ScriptType.Funscript,
-                CoyoteScript => ScriptType.CoyoteScript,
-                _ => throw new NotImplementedException()
-            };
         }
 
         public static FileType DetectFileType(string path)

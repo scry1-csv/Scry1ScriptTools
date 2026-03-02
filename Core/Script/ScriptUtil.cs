@@ -5,10 +5,34 @@ using System.Text.RegularExpressions;
 namespace Core.Script
 {
     public record ScriptAndErrors(IScript? Script, List<string> Errors);
+    public enum ScriptType { Vorze, TimeRoter, Funscript, CoyoteScript }
 
     public partial class ScriptUtil
     {
+        #region Public Fields
+
+        public static Dictionary<ScriptType, string> TypeExtentionMap = new()
+        {
+            { ScriptType.Vorze, ".csv" },
+            { ScriptType.TimeRoter, ".csv" },
+            { ScriptType.Funscript, ".funscript" },
+            { ScriptType.CoyoteScript, ".coyotescript" }
+        };
+
+        #endregion
+
         #region Public Methods
+        public static ScriptType GetScriptTypeFromScript(IScript Script)
+        {
+            return Script switch
+            {
+                Vorze_SA => ScriptType.Vorze,
+                TimeRoter => ScriptType.TimeRoter,
+                Funscript => ScriptType.Funscript,
+                CoyoteScript => ScriptType.CoyoteScript,
+                _ => throw new NotImplementedException()
+            };
+        }
 
         public static ScriptAndErrors LoadScript(string path)
         {
