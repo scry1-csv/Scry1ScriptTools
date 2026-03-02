@@ -1,4 +1,4 @@
-﻿using OxyPlot;
+using OxyPlot;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;

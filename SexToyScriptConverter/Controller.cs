@@ -1,4 +1,4 @@
-﻿using Core;
+using Core;
 using Core.Control;
 using Core.Script;
 using Microsoft.Win32;

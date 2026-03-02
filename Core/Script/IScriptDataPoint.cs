@@ -1,4 +1,4 @@
-﻿namespace Core.Script
+namespace Core.Script
 {
     internal interface IScriptDataPoint
     {

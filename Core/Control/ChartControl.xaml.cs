@@ -1,4 +1,4 @@
-﻿using Core.Script;
+using Core.Script;
 using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
