@@ -6,7 +6,7 @@ namespace SexToyScriptConverter.Converter
 {
     public static class VorzeToCoyote
     {
-        public record ConverterData(Func<Vorze_SA, CoyoteScript> Converter, string Name);
+        public record ConverterData(Func<Vorze_SA, CoyoteScript> Method, string Name);
 
         public static readonly ImmutableArray<ConverterData> Converters = [
             new(ConvertUp, "上昇")

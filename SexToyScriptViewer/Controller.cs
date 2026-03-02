@@ -1,4 +1,4 @@
-using Core;
+﻿using Core;
 using Core.Control;
 using Core.Script;
 using Microsoft.Win32;
@@ -12,7 +12,6 @@ namespace SexToyScriptViewer
         #region Public Properties
 
         public MainWindow MainWindow { get; }
-        public ChartController Chart { get; }
         public bool IsUserDragging { get; set; } = false;
         public TimeAxisModeEnum TimeAxisMode { get; set; } = TimeAxisModeEnum.HHMMSS;
 
@@ -20,7 +19,8 @@ namespace SexToyScriptViewer
 
         #region Private Fields
 
-        private readonly Dictionary<ChartControl, (IScript script, string filePath)> _chartScripts = new();
+        private readonly ChartController _chartController;
+        private readonly Dictionary<ChartControl, (IScript script, string filePath)> _chartScripts = [];
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace SexToyScriptViewer
         public Controller(MainWindow mainWindow)
         {
             MainWindow = mainWindow;
-            Chart = new ChartController(this);
+            _chartController = new ChartController(this);
         }
 
         #endregion
@@ -39,12 +39,12 @@ namespace SexToyScriptViewer
         public void CloseChart(ChartControl control)
         {
             UnregisterChart(control);
-            Chart.CloseChart(control);
+            _chartController.CloseChart(control);
         }
 
-        public void SyncChartsRange(ChartControl sender, double min, double max) => Chart.SyncChartsRange(sender, min, max);
-        public void MovePlayingAnnotations(double milliseconds) => Chart.MovePlayingAnnotations(milliseconds);
-        public void RefleshCharts() => Chart.RefleshCharts();
+        public void SyncChartsRange(ChartControl sender, double min, double max) => _chartController.SyncChartsRange(sender, min, max);
+        public void MovePlayingAnnotations(double milliseconds) => _chartController.MovePlayingAnnotations(milliseconds);
+        public void RefleshCharts() => _chartController.RefleshCharts();
 
         public void ReloadChart(ChartControl control)
         {
@@ -59,7 +59,7 @@ namespace SexToyScriptViewer
 
             _chartScripts[control] = (scriptAndErrors.Script, entry.filePath);
             ApplyScriptToChart(control, scriptAndErrors.Script);
-            Chart.RefleshCharts();
+            _chartController.RefleshCharts();
         }
 
         public void OpenScript(string path)
@@ -71,10 +71,10 @@ namespace SexToyScriptViewer
                 return;
             }
 
-            ChartControl control = Chart.CreateChartControl();
+            ChartControl control = _chartController.CreateChartControl();
             ApplyScriptToChart(control, scriptAndErrors.Script);
             RegisterChart(control, scriptAndErrors.Script, path);
-            Chart.RefleshCharts();
+            _chartController.RefleshCharts();
         }
 
         public void LoadMedia(string path) => MainWindow.MediaPlayer.LoadMedia(path);
@@ -98,13 +98,13 @@ namespace SexToyScriptViewer
         public void OnRadioButtonHHMMSSChecked()
         {
             TimeAxisMode = TimeAxisModeEnum.HHMMSS;
-            Chart.SetTimeAxisHHMMSS();
+            _chartController.SetTimeAxisHHMMSS();
         }
 
         public void OnRadioButtonInternalTimeChecked()
         {
             TimeAxisMode = TimeAxisModeEnum.Internal;
-            Chart.SetTimeAxisInternal();
+            _chartController.SetTimeAxisInternal();
         }
 
         #endregion
@@ -148,7 +148,7 @@ namespace SexToyScriptViewer
                 differenceRanges = u.DetectDeference();
             }
 
-            Chart.SetChartData(
+            _chartController.SetChartData(
                 control,
                 script.FileName,
                 script.PlotMin, script.PlotMax,

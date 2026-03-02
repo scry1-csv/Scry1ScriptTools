@@ -4,12 +4,11 @@ using System.Windows;
 
 namespace SexToyScriptConverter
 {
-    public class ChartController
+    internal class ChartController
     {
 
         #region Private Fields and Properties
 
-        private readonly Controller _parent;
         private readonly ChartSyncManager _syncManager = new();
 
         private readonly ChartControl originChart;
@@ -19,11 +18,10 @@ namespace SexToyScriptConverter
 
         #region Constructor
 
-        internal ChartController(Controller parent)
+        internal ChartController(MainWindow mainWindow)
         {
-            _parent = parent;
-            originChart = _parent.MainWindow.OriginChart;
-            convertedChart = _parent.MainWindow.ConvertedChart;
+            originChart = mainWindow.OriginChart;
+            convertedChart = mainWindow.ConvertedChart;
 
             originChart.HideButtons();
             convertedChart.HideFileInfoPanel();
@@ -55,27 +53,7 @@ namespace SexToyScriptConverter
             Func<double, string>? scriptTimeFormatter,
             IEnumerable<(double start, double end)>? differenceRanges)
         {
-            originChart.InitializeChart(
-                fileName,
-                plotMin, plotMax,
-                trackerFormat,
-                itemsSource,
-                itemsSource2,
-                scriptTimeFormatter,
-                differenceRanges
-            );
-
-            switch (_parent.TimeAxisMode)
-            {
-                case (TimeAxisModeEnum.HHMMSS):
-                    SetTimeAxisHHMMSS();
-                    break;
-
-                default:
-                    SetTimeAxisInternal();
-                    break;
-            }
-
+            ApplyChartData(originChart, fileName, plotMin, plotMax, trackerFormat, itemsSource, itemsSource2, scriptTimeFormatter, differenceRanges);
             originChart.Visibility = Visibility.Visible;
         }
 
@@ -88,26 +66,7 @@ namespace SexToyScriptConverter
             Func<double, string>? scriptTimeFormatter,
             IEnumerable<(double start, double end)>? differenceRanges)
         {
-            convertedChart.InitializeChart(
-                fileName,
-                plotMin, plotMax,
-                trackerFormat,
-                itemsSource,
-                itemsSource2,
-                scriptTimeFormatter,
-                differenceRanges
-            );
-
-            switch (_parent.TimeAxisMode)
-            {
-                case (TimeAxisModeEnum.HHMMSS):
-                    SetTimeAxisHHMMSS();
-                    break;
-
-                default:
-                    SetTimeAxisInternal();
-                    break;
-            }
+            ApplyChartData(convertedChart, fileName, plotMin, plotMax, trackerFormat, itemsSource, itemsSource2, scriptTimeFormatter, differenceRanges);
 
             if (_syncManager.ZoomMin > 0 | _syncManager.ZoomMax > 0)
                 convertedChart.ZoomTimeAxis(_syncManager.ZoomMin, _syncManager.ZoomMax);
@@ -123,6 +82,31 @@ namespace SexToyScriptConverter
         public void SetTimeAxisInternal()
         {
             _syncManager.SetTimeAxisInternal();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static void ApplyChartData(
+            ChartControl chart,
+            string fileName,
+            double plotMin, double plotMax,
+            string trackerFormat,
+            System.Collections.IEnumerable itemsSource,
+            System.Collections.IEnumerable? itemsSource2,
+            Func<double, string>? scriptTimeFormatter,
+            IEnumerable<(double start, double end)>? differenceRanges)
+        {
+            chart.InitializeChart(
+                fileName,
+                plotMin, plotMax,
+                trackerFormat,
+                itemsSource,
+                itemsSource2,
+                scriptTimeFormatter,
+                differenceRanges
+            );
         }
 
         #endregion
