@@ -1,5 +1,6 @@
 using Core;
 using Core.Control;
+using Core.Script;
 using Microsoft.Win32;
 
 namespace SexToyScriptViewer
@@ -13,8 +14,13 @@ namespace SexToyScriptViewer
         public MainWindow MainWindow { get; }
         public ChartController Chart { get; }
         public bool IsUserDragging { get; set; } = false;
-        public TimeAxisModeEnum TimeAxisMode { get; set; } = TimeAxisModeEnum.HHMMSS; 
+        public TimeAxisModeEnum TimeAxisMode { get; set; } = TimeAxisModeEnum.HHMMSS;
 
+        #endregion
+
+        #region Private Fields
+
+        private readonly Dictionary<ChartControl, (IScript script, string filePath)> _chartScripts = new();
 
         #endregion
 
@@ -30,12 +36,47 @@ namespace SexToyScriptViewer
 
         #region Public Methods
 
-        public void CloseChart(ChartControl control) => Chart.CloseChart(control);
+        public void CloseChart(ChartControl control)
+        {
+            UnregisterChart(control);
+            Chart.CloseChart(control);
+        }
+
         public void SyncChartsRange(ChartControl sender, double min, double max) => Chart.SyncChartsRange(sender, min, max);
         public void MovePlayingAnnotations(double milliseconds) => Chart.MovePlayingAnnotations(milliseconds);
         public void RefleshCharts() => Chart.RefleshCharts();
-        public void OpenScript(string path) => Chart.OpenScript(path);
-        public void ReloadChart(ChartControl control) => Chart.ReloadChart(control);
+
+        public void ReloadChart(ChartControl control)
+        {
+            if (!_chartScripts.TryGetValue(control, out var entry)) return;
+
+            var scriptAndErrors = ScriptUtil.LoadScript(entry.filePath);
+            if (scriptAndErrors.Script == null)
+            {
+                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
+                return;
+            }
+
+            _chartScripts[control] = (scriptAndErrors.Script, entry.filePath);
+            ApplyScriptToChart(control, scriptAndErrors.Script);
+            Chart.RefleshCharts();
+        }
+
+        public void OpenScript(string path)
+        {
+            var scriptAndErrors = ScriptUtil.LoadScript(path);
+            if (scriptAndErrors.Script == null)
+            {
+                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
+                return;
+            }
+
+            ChartControl control = Chart.CreateChartControl();
+            ApplyScriptToChart(control, scriptAndErrors.Script);
+            RegisterChart(control, scriptAndErrors.Script, path);
+            Chart.RefleshCharts();
+        }
+
         public void LoadMedia(string path) => MainWindow.MediaPlayer.LoadMedia(path);
 
         public void OnOpenButtonClicked()
@@ -59,6 +100,7 @@ namespace SexToyScriptViewer
             TimeAxisMode = TimeAxisModeEnum.HHMMSS;
             Chart.SetTimeAxisHHMMSS();
         }
+
         public void OnRadioButtonInternalTimeChecked()
         {
             TimeAxisMode = TimeAxisModeEnum.Internal;
@@ -77,12 +119,45 @@ namespace SexToyScriptViewer
                     LoadMedia(path);
                     break;
                 case FileType.Script:
-                    Chart.OpenScript(path);
+                    OpenScript(path);
                     break;
                 default:
                     CommonUtil.ShowMessageBoxTopMost($"対応していないファイル形式です:\n{path}");
                     break;
             }
+        }
+
+        private void RegisterChart(ChartControl control, IScript script, string filePath)
+        {
+            _chartScripts[control] = (script, filePath);
+        }
+
+        private void UnregisterChart(ChartControl control)
+        {
+            _chartScripts.Remove(control);
+        }
+
+        private void ApplyScriptToChart(ChartControl control, IScript script)
+        {
+            System.Collections.IEnumerable? itemsSource2 = null;
+            IEnumerable<(double start, double end)>? differenceRanges = null;
+
+            if (script is UFOTW u)
+            {
+                itemsSource2 = u.ToPlotRight();
+                differenceRanges = u.DetectDeference();
+            }
+
+            Chart.SetChartData(
+                control,
+                script.FileName,
+                script.PlotMin, script.PlotMax,
+                script.TrackerFormatString,
+                script.ToPlot(),
+                itemsSource2,
+                script.LabelFormatter_ScriptTime,
+                differenceRanges
+            );
         }
 
         #endregion

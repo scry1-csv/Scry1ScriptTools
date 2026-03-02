@@ -1,6 +1,5 @@
 using Core;
 using Core.Control;
-using Core.Script;
 using System.Windows;
 
 namespace SexToyScriptViewer
@@ -10,9 +9,7 @@ namespace SexToyScriptViewer
         #region Private Fields
 
         private readonly Controller _parent;
-        
         private readonly ChartSyncManager _syncManager = new();
-        private readonly Dictionary<ChartControl, string> _chartFilePaths = new();
 
         #endregion
 
@@ -27,10 +24,46 @@ namespace SexToyScriptViewer
 
         #region Public Methods
 
+        public ChartControl CreateChartControl()
+        {
+            ChartControl control = new();
+            control.ReloadChartRequested += (s, e) => _parent.ReloadChart(control);
+            control.CloseChartRequested += (s, e) => _parent.CloseChart(control);
+            control.IsUserDraggingChanged += (s, e) => _parent.IsUserDragging = e;
+            _syncManager.AddChart(control);
+
+            if (_parent.MainWindow.RadioButton_HHMMSS.IsChecked ?? false)
+                control.SetTimeAxisLabelHHMMSS();
+            else
+                control.SetTimeAxisLabelInternalTime();
+
+            return control;
+        }
+
+        public void SetChartData(
+            ChartControl control,
+            string fileName,
+            double plotMin, double plotMax,
+            string trackerFormat,
+            System.Collections.IEnumerable itemsSource,
+            System.Collections.IEnumerable? itemsSource2,
+            Func<double, string>? scriptTimeFormatter,
+            IEnumerable<(double start, double end)>? differenceRanges)
+        {
+            control.InitializeChart(
+                fileName,
+                plotMin, plotMax,
+                trackerFormat,
+                itemsSource,
+                itemsSource2,
+                scriptTimeFormatter,
+                differenceRanges
+            );
+        }
+
         public void CloseChart(ChartControl control)
         {
             _syncManager.RemoveChart(control);
-            _chartFilePaths.Remove(control);
             RefleshCharts();
         }
 
@@ -75,48 +108,6 @@ namespace SexToyScriptViewer
             }
         }
 
-        public void OpenScript(string path)
-        {
-            var scriptAndErrors = ScriptUtil.LoadScript(path);
-            if (scriptAndErrors.Script == null)
-            {
-                CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
-                return;
-            }
-            
-            ChartControl control = new();
-            control.ReloadChartRequested += (s, e) => ReloadChart(control);
-            control.CloseChartRequested += (s, e) => CloseChart(control);
-            control.IsUserDraggingChanged += (s, e) => _parent.IsUserDragging = e;
-            InitializeChartControlWithScript(control, scriptAndErrors.Script);
-
-            _syncManager.AddChart(control);
-            _chartFilePaths[control] = path;
-
-            if (_parent.MainWindow.RadioButton_HHMMSS.IsChecked ?? false)
-                control.SetTimeAxisLabelHHMMSS();
-            else
-                control.SetTimeAxisLabelInternalTime();
-
-            RefleshCharts();
-        }
-
-        public void ReloadChart(ChartControl control)
-        {
-            if (_chartFilePaths.TryGetValue(control, out var path))
-            {
-                var scriptAndErrors = ScriptUtil.LoadScript(path);
-                if (scriptAndErrors.Script == null)
-                {
-                    CommonUtil.ShowMessageBoxTopMost($"スクリプトの読み込みに失敗しました。\n\n{string.Join("\n", scriptAndErrors.Errors)}");
-                    return;
-                }
-
-                InitializeChartControlWithScript(control, scriptAndErrors.Script);
-                RefleshCharts();                
-            }
-        }
-
         public void SetTimeAxisHHMMSS()
         {
             _syncManager.SetTimeAxisHHMMSS();
@@ -125,44 +116,6 @@ namespace SexToyScriptViewer
         public void SetTimeAxisInternal()
         {
             _syncManager.SetTimeAxisInternal();
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void InitializeChartControlWithScript(ChartControl control, IScript script)
-        {
-            string fileName = "";
-            double plotMin = 0, plotMax = 100;
-            string trackerFormat = "";
-            System.Collections.IEnumerable? itemsSource = null;
-            System.Collections.IEnumerable? itemsSource2 = null;
-            Func<double, string>? scriptTimeFormatter = null;
-            IEnumerable<(double start, double end)>? differenceRanges = null;
-
-            fileName = script.FileName;
-            plotMin = script.PlotMin;
-            plotMax = script.PlotMax;
-            trackerFormat = script.TrackerFormatString;
-            itemsSource = script.ToPlot();
-            scriptTimeFormatter = script.LabelFormatter_ScriptTime;
-            
-            if (script is UFOTW u)
-            {
-                itemsSource2 = u.ToPlotRight();
-                differenceRanges = u.DetectDeference();
-            }
-
-            control.InitializeChart(
-                fileName,
-                plotMin, plotMax,
-                trackerFormat,
-                itemsSource,
-                itemsSource2,
-                scriptTimeFormatter,
-                differenceRanges
-            );
         }
 
         #endregion
