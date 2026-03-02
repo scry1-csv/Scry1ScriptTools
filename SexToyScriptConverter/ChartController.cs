@@ -1,6 +1,5 @@
 using Core;
 using Core.Control;
-using Core.Script;
 using System.Windows;
 
 namespace SexToyScriptConverter
@@ -47,11 +46,26 @@ namespace SexToyScriptConverter
             _syncManager.MovePlayingAnnotations(milliseconds);
         }
 
-        public void SetOrigin(IScript script)
+        public void SetOrigin(
+            string fileName,
+            double plotMin, double plotMax,
+            string trackerFormat,
+            System.Collections.IEnumerable itemsSource,
+            System.Collections.IEnumerable? itemsSource2,
+            Func<double, string>? scriptTimeFormatter,
+            IEnumerable<(double start, double end)>? differenceRanges)
         {
-            InitializeChartControlWithScript(originChart, script);
-            
-            switch(_parent.TimeAxisMode)
+            originChart.InitializeChart(
+                fileName,
+                plotMin, plotMax,
+                trackerFormat,
+                itemsSource,
+                itemsSource2,
+                scriptTimeFormatter,
+                differenceRanges
+            );
+
+            switch (_parent.TimeAxisMode)
             {
                 case (TimeAxisModeEnum.HHMMSS):
                     SetTimeAxisHHMMSS();
@@ -65,9 +79,24 @@ namespace SexToyScriptConverter
             originChart.Visibility = Visibility.Visible;
         }
 
-        public void SetConverted(IScript script)
+        public void SetConverted(
+            string fileName,
+            double plotMin, double plotMax,
+            string trackerFormat,
+            System.Collections.IEnumerable itemsSource,
+            System.Collections.IEnumerable? itemsSource2,
+            Func<double, string>? scriptTimeFormatter,
+            IEnumerable<(double start, double end)>? differenceRanges)
         {
-            InitializeChartControlWithScript(convertedChart, script);
+            convertedChart.InitializeChart(
+                fileName,
+                plotMin, plotMax,
+                trackerFormat,
+                itemsSource,
+                itemsSource2,
+                scriptTimeFormatter,
+                differenceRanges
+            );
 
             switch (_parent.TimeAxisMode)
             {
@@ -94,44 +123,6 @@ namespace SexToyScriptConverter
         public void SetTimeAxisInternal()
         {
             _syncManager.SetTimeAxisInternal();
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void InitializeChartControlWithScript(ChartControl control, IScript script)
-        {
-            string fileName = "";
-            double plotMin = 0, plotMax = 100;
-            string trackerFormat = "";
-            System.Collections.IEnumerable? itemsSource = null;
-            System.Collections.IEnumerable? itemsSource2 = null;
-            Func<double, string>? scriptTimeFormatter = null;
-            IEnumerable<(double start, double end)>? differenceRanges = null;
-
-            fileName = script.FileName;
-            plotMin = script.PlotMin;
-            plotMax = script.PlotMax;
-            trackerFormat = script.TrackerFormatString;
-            itemsSource = script.ToPlot();
-            scriptTimeFormatter = script.LabelFormatter_ScriptTime;
-            
-            if (script is UFOTW u)
-            {
-                itemsSource2 = u.ToPlotRight();
-                differenceRanges = u.DetectDeference();
-            }
-
-            control.InitializeChart(
-                fileName,
-                plotMin, plotMax,
-                trackerFormat,
-                itemsSource,
-                itemsSource2,
-                scriptTimeFormatter,
-                differenceRanges
-            );
         }
 
         #endregion
