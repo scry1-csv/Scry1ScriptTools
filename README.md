@@ -12,15 +12,21 @@
 - U.F.O. SA/A10サイクロンSA用CSV
 - U.F.O. TW用CSV
 - タイムローター用CSV
+- CoyoteScript ( [WebSexToysPlayer](https://github.com/scry1-csv/WebSexToysPlayer/blob/main/README_ja.md) で [DG-Lab COYOTE 3.0](https://foryourpleasure.jp/products/coyote-e-stim-powerbox-3-0) を動かすためのスクリプト形式。仕様は[こちらを参照](https://scry1-csv.github.io/WebSexToysPlayer-Pages/coyotescript.html) )
 
 A10ピストン用CSVは現在非対応です。(今後対応予定)
 
 ## SexToyScriptConverter 対応スクリプト形式
 
-現在のところ、funscriptまたはUFOSA/A10サイクロンSA用CSVから、CoyoteScript（[WebSexToysPlayer](https://github.com/scry1-csv/WebSexToysPlayer)でCoyote V3を連動させるためのスクリプト形式）への変換のみに対応しています。
+現在のところ、
+
+- funscript → CoyoteScript
+- UFOSA/A10サイクロンSA用CSV → CoyoteScript
+
+の変換にのみ対応しています。
 
 ## 使用ライブラリ
-[OxyPlot 2.0.0](https://github.com/oxyplot/oxyplot)
+[OxyPlot 2.0.0](https://github.com/oxyplot/oxyplot/releases/tag/v2.0.0)
 
 ## ライセンス
 MIT License
