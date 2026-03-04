@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      # リポジトリをチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # .NET 10 SDK をセットアップ
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # SexToyScriptConverter をパブリッシュ
+      - name: Publish SexToyScriptConverter
+        run: >
+          dotnet publish SexToyScriptConverter/SexToyScriptConverter.csproj
+          /p:PublishProfile=FolderProfile
+
+      # SexToyScriptViewer をパブリッシュ
+      - name: Publish SexToyScriptViewer
+        run: >
+          dotnet publish SexToyScriptViewer/SexToyScriptViewer.csproj
+          /p:PublishProfile=FolderProfile
+
+      # リリース日付タグを生成（JST: UTC+9）
+      - name: Generate release tag
+        id: tag
+        shell: pwsh
+        run: |
+          # JST (UTC+9) で当日の日付を取得してタグを生成
+          $date = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(
+            [DateTime]::UtcNow, 'Tokyo Standard Time'
+          ).ToString('yyyy-MM-dd')
+          $tag = "v$date"
+          echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+          echo "生成されたタグ: $tag"
+
+      # ZIPアーカイブを作成
+      - name: Create release zip
+        id: zip
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.tag.outputs.TAG }}"
+          $zipName = "Scry1ScriptTools-$tag.zip"
+
+          # README.md を README.txt としてコピー
+          Copy-Item -Path "README.md" -Destination "README.txt"
+
+          # ZIPに含めるファイルをまとめる
+          $files = @(
+            "SexToyScriptConverter/publish/SexToyScriptConverter.exe",
+            "SexToyScriptViewer/publish/SexToyScriptViewer.exe",
+            "README.txt",
+            "LICENSE.txt",
+            "ThirdPartyNotices.txt"
+          )
+
+          Compress-Archive -Path $files -DestinationPath $zipName -Force
+          echo "ZIP_NAME=$zipName" >> $env:GITHUB_OUTPUT
+          echo "作成されたZIPファイル: $zipName"
+
+      # GitHub Releaseを作成してZIPを添付
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: ${{ steps.tag.outputs.TAG }}
+          files: ${{ steps.zip.outputs.ZIP_NAME }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
