@@ -6,6 +6,10 @@
 - SexToyScriptConverter: スクリプトを他の形式へ変換する。変換前後の内容をグラフ表示できる
 - 共通機能: 音声や動画ファイルを読み込んで再生することでチャート上に再生位置の目印を表示でき、音声を聞きながらスクリプトの確認が可能
 
+## ダウンロード
+
+[こちらからダウンロードできます。](https://github.com/scry1-csv/Scry1ScriptTools/releases/latest)
+
 ## SexToyScriptViewer 対応スクリプト形式
 
 - funscript
