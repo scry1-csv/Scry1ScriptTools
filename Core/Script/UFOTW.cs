@@ -5,6 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
+    /// <summary>
+    /// 「UFOTW」形式のスクリプト。
+    /// 内部時間単位: <b>100ms 単位</b>。InternalTime の 1 = 100ms。
+    /// Milliseconds への変換式: InternalTime * 100。
+    /// Vorze_SA と同じ単位だが、左右独立のチャンネルを持つ。
+    /// </summary>
     public partial class UFOTW : IScript
     {
         #region Public Properties
@@ -27,6 +33,7 @@ namespace Core.Script
 
         #region Public Methods
 
+        // 1 InternalTime = 100ms なので ms を 100 で割る。小数点以下は四捨五入。
         public int MillisecondsToInternalTime(double milliseconds)
         {
             return Convert.ToInt32(milliseconds / 100);
@@ -216,6 +223,7 @@ namespace Core.Script
             public int LeftPower;
             public bool RightDirection;
             public int RightPower;
+            // InternalTime * 100 で ms に変換する (1 InternalTime = 100ms)。
             public double Milliseconds { get => (double)InternalTime * 100; }
             public string CsvLeftDirection { get => LeftDirection ? "1" : "0"; }
             public string CsvRightDirection { get => RightDirection ? "1" : "0"; }

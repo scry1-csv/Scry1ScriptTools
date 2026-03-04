@@ -5,6 +5,12 @@ using System.Text.Json.Serialization;
 
 namespace Core.Script
 {
+    /// <summary>
+    /// 「Funscript」形式のスクリプト。
+    /// 内部時間単位: <b>ミリ秒 (ms)</b>。Action.At の 1 = 1ms。
+    /// Milliseconds への変換式: At * 1 (そのまま)。
+    /// InternalTime 等価のフィールド平均は Action.At 。
+    /// </summary>
     public class Funscript : IScript
     {
         #region Public Properties
@@ -40,12 +46,13 @@ namespace Core.Script
 
         #region Public Methods
 
-        public static Funscript? LoadScript(string path) {
+        public static Funscript? LoadScript(string path)
+        {
             var result = LoadJson(path);
-            if(result is null) 
+            if (result is null)
                 return null;
             else
-                return new Funscript(result, Path.GetFileName(path), path);            
+                return new Funscript(result, Path.GetFileName(path), path);
         }
 
         public void SaveScript(string path)
@@ -68,10 +75,11 @@ namespace Core.Script
         }
 
 
+        // 内部時間単位 = ms なので、ms をそのまま int にキャストするだけ
         public int MillisecondsToInternalTime(double milliseconds) => (int)milliseconds;
 
         public string LabelFormatter_ScriptTime(double milliseconds) => milliseconds.ToString();
-        
+
         public string LabelFormatter_HHMMSS(double milliseconds) => ScriptUtil.MillisecondsToHHMMSS(milliseconds);
 
         #endregion
@@ -133,6 +141,7 @@ namespace Core.Script
         {
             [JsonPropertyName("pos")]
             public int Pos { get; set; }
+            /// <summary>ミリ秒単位 (1 = 1ms)。内部時間の基準値。</summary>
             [JsonPropertyName("at")]
             public int At { get; set; }
             public override string ToString() => $"pos: {Pos}, at: {At}";

@@ -5,6 +5,11 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
+    /// <summary>
+    /// 「Vorze」形式のスクリプト。
+    /// 内部時間単位: <b>100ms 単位</b>。InternalTime の 1 = 100ms。
+    /// Milliseconds への変換式: InternalTime * 100。
+    /// </summary>
     public partial class Vorze_SA : IScript
     {
         #region Public Properties
@@ -19,13 +24,14 @@ namespace Core.Script
 
         #region Public Methods
 
+        // 1 InternalTime = 100ms なので ms を 100 で割る。小数点以下は四捨五入。
         public int MillisecondsToInternalTime(double milliseconds)
         {
             return Convert.ToInt32(milliseconds / 100);
         }
 
         public string LabelFormatter_ScriptTime(double milliseconds) => (milliseconds / 100).ToString();
-            
+
 
         public static ScriptAndErrors LoadScript(string path)
         {
@@ -80,7 +86,7 @@ namespace Core.Script
 
             foreach (var row in ScriptData)
                 sb.AppendLine($"{row.InternalTime},{row.CsvDirection},{row.Power}");
-            
+
             File.WriteAllText(path, sb.ToString());
         }
 
@@ -145,11 +151,13 @@ namespace Core.Script
         /// </summary>
         public record ScriptRow
         {
+            /// <summary>100ms 単位 (1 = 100ms)。Milliseconds への変換は * 100。</summary>
             public int InternalTime;
             public bool Direction;
             public int Power;
             public string CsvDirection { get => Direction ? "1" : "0"; }
-            public double Milliseconds => InternalTime * 100; 
+            // InternalTime * 100 で ms に変換する。
+            public double Milliseconds => InternalTime * 100;
             public override string ToString()
             {
                 var builder = new StringBuilder();

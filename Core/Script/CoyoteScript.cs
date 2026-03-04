@@ -5,6 +5,11 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
+    /// <summary>
+    /// 「Coyote」形式のスクリプト。
+    /// 内部時間単位: <b>ミリ秒 (ms)</b>。InternalTime の 1 = 1ms。
+    /// Milliseconds への変換式: InternalTime * 1 (题差なし)。
+    /// </summary>
     public partial class CoyoteScript : IScript
     {
         #region Public Properties
@@ -18,6 +23,7 @@ namespace Core.Script
         #endregion
 
         #region Public Methods
+        // 内部時間単位 = ms なので、ms をそのまま int にキャストするだけ
         public int MillisecondsToInternalTime(double milliseconds) => (int)milliseconds;
 
         public string LabelFormatter_ScriptTime(double milliseconds) => milliseconds.ToString();
@@ -108,7 +114,7 @@ namespace Core.Script
         /// </summary>
         public struct ScriptRow
         {
-            /// <summary>ミリ秒単位</summary>
+            /// <summary>ミリ秒単位 (1 = 1ms)。Milliseconds プロパティへの変換は * 1（そのまま）。</summary>
             public int InternalTime;
             /// <summary>0～100まで</summary>
             public int Frequency;

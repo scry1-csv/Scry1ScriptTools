@@ -5,6 +5,16 @@ using System.Text.RegularExpressions;
 
 namespace Core.Script
 {
+    /// <summary>
+    /// 「TimeRoter」形式のスクリプト。
+    /// 内部時間単位: <b>10ms 単位</b>。InternalTime の 1 = 10ms。
+    /// Milliseconds への変換式: InternalTime * 10。
+    /// ※ CSV 保存形式と InternalTime の差異に注意:
+    ///   CSV 上の時刻は「秒の小数点表記」(例: 1.23)であり、
+    ///   読み込み時に「小数表記秒 * 100」して InternalTime に変換するため、
+    ///   1.23秒 → InternalTime=123 (= 1230ms ・ 10 = 123 tick)。
+    ///   保存時は InternalTime を 100 で割り「秒」表記に戻す (<see cref="ScriptRow.CsvTime"/> 参照)。
+    /// </summary>
     public partial class TimeRoter(List<TimeRoter.ScriptRow> scriptData, string fileName, string filePath) : IScript
     {
         #region Static Fields
@@ -28,6 +38,7 @@ namespace Core.Script
 
         #region Public Methods
 
+        // 1 InternalTime = 10ms なので ms を 10 で割る。小数点以下は四捨五入。
         public int MillisecondsToInternalTime(double milliseconds)
         {
             return Convert.ToInt32(milliseconds / 10);
@@ -44,7 +55,7 @@ namespace Core.Script
 
             List<ScriptRow> script = [];
             List<string> errors = [];
-            var emptyline = ScriptUtil. EmptyLineRegex();
+            var emptyline = ScriptUtil.EmptyLineRegex();
             var syntax = SyntaxRegex();
 
             for (int i = 0; i < rows.Count; i++)
@@ -56,13 +67,15 @@ namespace Core.Script
                 }
 
                 if (!syntax.IsMatch(rows[i]))
-                { 
+                {
                     errors.Add($"{i + 1}行目: 構文エラー");
                     continue;
                 }
 
                 var splitted = rows[i].Split(',');
                 var d = decimal.Parse(splitted[0]);
+                // CSV上の山山表記(秒)を * 100 して InternalTime(単位: 10ms) に変換。
+                // 例: CSV値 1.23秒 -> d=1.23 -> time = 123  (123 * 10ms = 1230ms ≡ 1.23秒)
                 int time = decimal.ToInt32(d * 100);
 
                 script.Add(new ScriptRow()
@@ -121,10 +134,12 @@ namespace Core.Script
         /// </summary>
         public struct ScriptRow
         {
-            /// <summary>1/100秒単位</summary>
+            /// <summary>10ms 単位 (1 = 10ms)。Milliseconds への変換は * 10。
+            /// CSV値(秒小数点表記) からの変換式: int(CSV値 * 100)。</summary>
             public int InternalTime;
             /// <summary>0～1000まで</summary>
             public int Power;
+            // InternalTime * 10 で ms に変換 (1 InternalTime = 10ms)。
             public readonly double Milliseconds { get => (double)InternalTime * 10; }
             public readonly string CsvTime { get => $"{(InternalTime / 100):F2}"; }
 
