@@ -49,6 +49,22 @@ namespace SexToyScriptConverter
         public void MovePlayingAnnotations(double milliseconds) => _chartController.MovePlayingAnnotations(milliseconds);
         public void LoadMedia(string path) => MainWindow.MediaPlayer.LoadMedia(path);
 
+        public void OpenFile(string path)
+        {
+            switch (CommonUtil.DetectFileType(path))
+            {
+                case FileType.Media:
+                    LoadMedia(path);
+                    break;
+                case FileType.Script:
+                    OpenScript(path);
+                    break;
+                default:
+                    CommonUtil.ShowMessageBoxTopMost($"対応していないファイル形式です:\n{path}");
+                    break;
+            }
+        }
+
         private ScriptType GetTargetScriptType()
         {
             // 現在はCoyoteScript以外に対応していないためコメントアウト
@@ -195,21 +211,6 @@ namespace SexToyScriptConverter
                 ApplyConverted(converted);
         }
 
-        private void OpenFile(string path)
-        {
-            switch (CommonUtil.DetectFileType(path))
-            {
-                case FileType.Media:
-                    LoadMedia(path);
-                    break;
-                case FileType.Script:
-                    OpenScript(path);
-                    break;
-                default:
-                    CommonUtil.ShowMessageBoxTopMost($"対応していないファイル形式です:\n{path}");
-                    break;
-            }
-        }
 
         private void ApplyConverted(IScript script)
         {

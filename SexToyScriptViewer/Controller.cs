@@ -62,6 +62,24 @@ namespace SexToyScriptViewer
             _chartController.RefleshCharts();
         }
 
+
+        public void OpenFile(string path)
+        {
+            switch (CommonUtil.DetectFileType(path))
+            {
+                case FileType.Media:
+                    LoadMedia(path);
+                    break;
+                case FileType.Script:
+                    OpenScript(path);
+                    break;
+                default:
+                    CommonUtil.ShowMessageBoxTopMost($"対応していないファイル形式です:\n{path}");
+                    break;
+            }
+        }
+
+
         public void OpenScript(string path)
         {
             var scriptAndErrors = ScriptUtil.LoadScript(path);
@@ -110,22 +128,6 @@ namespace SexToyScriptViewer
         #endregion
 
         #region Private Methods
-
-        private void OpenFile(string path)
-        {
-            switch (CommonUtil.DetectFileType(path))
-            {
-                case FileType.Media:
-                    LoadMedia(path);
-                    break;
-                case FileType.Script:
-                    OpenScript(path);
-                    break;
-                default:
-                    CommonUtil.ShowMessageBoxTopMost($"対応していないファイル形式です:\n{path}");
-                    break;
-            }
-        }
 
         private void RegisterChart(ChartControl control, IScript script, string filePath)
         {

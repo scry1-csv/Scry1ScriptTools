@@ -26,6 +26,11 @@ namespace SexToyScriptConverter
 
             // MediaPlayerControlのイベントを購読してChartControllerへブリッジする
             MediaPlayer.PositionChanged += ms => _controller.MovePlayingAnnotations(ms);
+
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length >= 2)
+                for (int i = 1; i < args.Length; i++)
+                    _controller.OpenFile(args[i]);
         }
 
         #endregion
