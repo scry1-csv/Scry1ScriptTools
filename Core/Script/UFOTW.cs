@@ -125,39 +125,8 @@ namespace Core.Script
             } : null, errors);
         }
 
-        public IDataPointProvider[] ToPlot()
-        {
-            List<CustomDataPoint> result = [new CustomDataPoint(0, 0, 0)];
-
-            bool prevLeftDirection = true, prevRightDirection = true;
-            int prevLeftPower = 0, prevRightPower = 0;
-
-            foreach (var line in _scriptData)
-            {
-                if (line.LeftDirection != prevLeftDirection || line.LeftPower != prevLeftPower ||
-                    line.RightDirection != prevRightDirection || line.RightPower != prevRightPower)
-                {
-                    int leftPower, rightPower;
-                    if (line.LeftDirection == true)
-                        leftPower = line.LeftPower;
-                    else
-                        leftPower = -line.LeftPower;
-                    if (line.RightDirection == true)
-                        rightPower = line.RightPower;
-                    else
-                        rightPower = -line.RightPower;
-
-                    result.Add(new CustomDataPoint(line.Milliseconds, prevLeftPower, line.InternalTime));
-                    result.Add(new CustomDataPoint(line.Milliseconds, leftPower, line.InternalTime));
-                    prevLeftDirection = line.LeftDirection;
-                    prevLeftPower = leftPower;
-                    prevRightDirection = line.RightDirection;
-                    prevRightPower = rightPower;
-                }
-            }
-
-            return result.ToArray();
-        }
+        public IDataPointProvider[] ToPlot() => PlotChannel(isRight: false);
+        public IDataPointProvider[] ToPlotRight() => PlotChannel(isRight: true);
 
         public void SaveScript(string path)
         {
@@ -170,10 +139,13 @@ namespace Core.Script
         }
 
 
+        #endregion
 
-        public IDataPointProvider[] ToPlotRight()
+        #region Private Methods
+
+        private IDataPointProvider[] PlotChannel(bool isRight)
         {
-            List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, 0) };
+            List<CustomDataPoint> result = [new CustomDataPoint(0, 0, 0)];
 
             bool prevLeftDirection = true, prevRightDirection = true;
             int prevLeftPower = 0, prevRightPower = 0;
@@ -183,18 +155,14 @@ namespace Core.Script
                 if (line.LeftDirection != prevLeftDirection || line.LeftPower != prevLeftPower ||
                     line.RightDirection != prevRightDirection || line.RightPower != prevRightPower)
                 {
-                    int leftPower, rightPower;
-                    if (line.LeftDirection == true)
-                        leftPower = line.LeftPower;
-                    else
-                        leftPower = -line.LeftPower;
-                    if (line.RightDirection == true)
-                        rightPower = line.RightPower;
-                    else
-                        rightPower = -line.RightPower;
+                    int leftPower = line.LeftDirection ? line.LeftPower : -line.LeftPower;
+                    int rightPower = line.RightDirection ? line.RightPower : -line.RightPower;
 
-                    result.Add(new CustomDataPoint(line.Milliseconds, prevRightPower, line.InternalTime));
-                    result.Add(new CustomDataPoint(line.Milliseconds, rightPower, line.InternalTime));
+                    int prevTarget = isRight ? prevRightPower : prevLeftPower;
+                    int target = isRight ? rightPower : leftPower;
+
+                    result.Add(new CustomDataPoint(line.Milliseconds, prevTarget, line.InternalTime));
+                    result.Add(new CustomDataPoint(line.Milliseconds, target, line.InternalTime));
                     prevLeftDirection = line.LeftDirection;
                     prevLeftPower = leftPower;
                     prevRightDirection = line.RightDirection;
@@ -204,10 +172,6 @@ namespace Core.Script
 
             return result.ToArray();
         }
-
-        #endregion
-
-        #region Private Methods
 
         [GeneratedRegex("^([0-9]+),([01]),(100|[0-9]{1,2}),([01]),(100|[0-9]{1,2})")]
         private static partial Regex SyntaxRegex();
