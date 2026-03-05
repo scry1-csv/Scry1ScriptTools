@@ -1,4 +1,4 @@
-using OxyPlot;
+﻿using OxyPlot;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -112,34 +112,11 @@ namespace Core.Script
             return result.ToArray();
         }
 
-
-        public IDataPointProvider[] ToPlotRight()
-        {
-            List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, 0) };
-
-            int prevPower = 0;
-
-            foreach (var row in ScriptData)
-            {
-                int power;
-                if (row.Direction == true)
-                    power = row.Power;
-                else
-                    power = -row.Power;
-
-                result.Add(new CustomDataPoint(row.Milliseconds, prevPower, row.InternalTime));
-                result.Add(new CustomDataPoint(row.Milliseconds, power, row.InternalTime));
-                prevPower = power;
-            }
-
-            return result.ToArray();
-        }
-
         #endregion
 
         #region Private Methods
 
-        [GeneratedRegex("^([0-9]+),([01]),(100|[0-9]{1,2})")]
+        [GeneratedRegex("^([0-9]+),([01]),(100|[0-9]{1,2})$")]
         private static partial Regex SyntaxRegex();
 
         #endregion
