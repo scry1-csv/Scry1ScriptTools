@@ -2,6 +2,11 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'リリースノート（変更内容を記述してください）'
+        required: true
+        type: string
 
 jobs:
   release:
@@ -11,12 +16,20 @@ jobs:
       # リポジトリをチェックアウト
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # .NET 10 SDK をセットアップ
       - name: Setup .NET 10 SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      # Core を先にビルド（依存関係の解決を保証）
+      - name: Build Core
+        run: >
+          dotnet build Core/Core.csproj
+          -c Release
 
       # SexToyScriptConverter をパブリッシュ
       - name: Publish SexToyScriptConverter
@@ -41,7 +54,32 @@ jobs:
           ).ToString('yyyy-MM-dd')
           $tag = "v$date"
           echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+          echo "DATE=$date" >> $env:GITHUB_OUTPUT
           echo "生成されたタグ: $tag"
+
+      # README.md のバージョン履歴を更新
+      - name: Update README version history
+        shell: pwsh
+        run: |
+          $date = "${{ steps.tag.outputs.DATE }}"
+          $notes = "${{ github.event.inputs.release_notes }}"
+          $entry = "$date $notes"
+
+          $readme = Get-Content -Path "README.md" -Raw
+          # 「## バージョン履歴」の直後の空行の後に新しいエントリを挿入
+          $readme = $readme -replace '(## バージョン履歴\r?\n\r?\n)', "`$1$entry`r`n"
+          Set-Content -Path "README.md" -Value $readme -NoNewline
+          echo "README.md にバージョン履歴を追加: $entry"
+
+      # README.md の変更をコミットしてプッシュ
+      - name: Commit README update
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: update version history for ${{ steps.tag.outputs.TAG }}"
+          git push
 
       # ZIPアーカイブを作成
       - name: Create release zip
@@ -73,6 +111,7 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.TAG }}
           name: ${{ steps.tag.outputs.TAG }}
+          body: ${{ github.event.inputs.release_notes }}
           files: ${{ steps.zip.outputs.ZIP_NAME }}
           generate_release_notes: false
         env:
