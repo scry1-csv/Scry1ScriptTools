@@ -84,14 +84,15 @@ namespace Core.Script
 
         public IDataPointProvider[] ToPlot()
         {
-            List<CustomDataPoint> result = [new CustomDataPoint(0, 0)];
+            List<CustomDataPoint> result = [new CustomDataPoint(0, 0, "0")];
 
             int prevPower = 0;
 
             foreach (var row in ScriptData)
             {
-                result.Add(new CustomDataPoint(row.Milliseconds, prevPower));
-                result.Add(new CustomDataPoint(row.Milliseconds, row.Strength));
+                var st = row.Milliseconds.ToString();
+                result.Add(new CustomDataPoint(row.Milliseconds, prevPower, st));
+                result.Add(new CustomDataPoint(row.Milliseconds, row.Strength, st));
                 prevPower = row.Strength;
             }
 
@@ -132,26 +133,6 @@ namespace Core.Script
             }
         }
 
-        public class CustomDataPoint : IDataPointProvider, IScriptDataPoint
-        {
-            public double X { get; }
-            public double Y { get; }
-            public int Frequency { get; }
-            public string HHMMSS { get; }
-            public string ScriptTime { get; }
-            public DataPoint GetDataPoint()
-            {
-                return new DataPoint(X, Y);
-            }
-
-            public CustomDataPoint(double x, double y)
-            {
-                X = x;
-                Y = y;
-                HHMMSS = ScriptUtil.MillisecondsToHHMMSS(x);
-                ScriptTime = x.ToString();
-            }
-        }
 
         #endregion
     }

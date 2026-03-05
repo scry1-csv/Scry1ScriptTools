@@ -92,7 +92,7 @@ namespace Core.Script
 
         public IDataPointProvider[] ToPlot()
         {
-            List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, 0) };
+            List<CustomDataPoint> result = new() { new CustomDataPoint(0, 0, "0") };
 
             int prevPower = 0;
 
@@ -104,8 +104,9 @@ namespace Core.Script
                 else
                     power = -row.Power;
 
-                result.Add(new CustomDataPoint(row.Milliseconds, prevPower, row.InternalTime));
-                result.Add(new CustomDataPoint(row.Milliseconds, power, row.InternalTime));
+                var st = row.InternalTime.ToString();
+                result.Add(new CustomDataPoint(row.Milliseconds, prevPower, st));
+                result.Add(new CustomDataPoint(row.Milliseconds, power, st));
                 prevPower = power;
             }
 
@@ -145,26 +146,6 @@ namespace Core.Script
             }
         }
 
-        public class CustomDataPoint : IDataPointProvider, IScriptDataPoint
-        {
-            public double X { get; }
-            public double Y { get; }
-            public string HHMMSS { get; }
-            public string ScriptTime { get; }
-
-            public CustomDataPoint(double x, double y, int internalTime)
-            {
-                X = x;
-                Y = y;
-                HHMMSS = MillisecondsToHHMMSS(x);
-                ScriptTime = internalTime.ToString();
-            }
-
-            private static string MillisecondsToHHMMSS(double milliseconds) =>
-                ScriptUtil.TimeSpanToHHMMSS(new TimeSpan(0, 0, 0, 0, (int)milliseconds));
-
-            public DataPoint GetDataPoint() => new(X, Y);
-        }
 
         #endregion
     }

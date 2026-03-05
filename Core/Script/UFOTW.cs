@@ -145,7 +145,7 @@ namespace Core.Script
 
         private IDataPointProvider[] PlotChannel(bool isRight)
         {
-            List<CustomDataPoint> result = [new CustomDataPoint(0, 0, 0)];
+            List<CustomDataPoint> result = [new CustomDataPoint(0, 0, "0")];
 
             bool prevLeftDirection = true, prevRightDirection = true;
             int prevLeftPower = 0, prevRightPower = 0;
@@ -161,8 +161,9 @@ namespace Core.Script
                     int prevTarget = isRight ? prevRightPower : prevLeftPower;
                     int target = isRight ? rightPower : leftPower;
 
-                    result.Add(new CustomDataPoint(line.Milliseconds, prevTarget, line.InternalTime));
-                    result.Add(new CustomDataPoint(line.Milliseconds, target, line.InternalTime));
+                    var st = line.InternalTime.ToString();
+                    result.Add(new CustomDataPoint(line.Milliseconds, prevTarget, st));
+                    result.Add(new CustomDataPoint(line.Milliseconds, target, st));
                     prevLeftDirection = line.LeftDirection;
                     prevLeftPower = leftPower;
                     prevRightDirection = line.RightDirection;
@@ -222,23 +223,6 @@ namespace Core.Script
             }
         }
 
-        public class CustomDataPoint : IDataPointProvider, IScriptDataPoint
-        {
-            public double X { get; }
-            public double Y { get; }
-            public string HHMMSS { get; }
-            public string ScriptTime { get; }
-
-            public CustomDataPoint(double x, double y, int internalTime)
-            {
-                X = x;
-                Y = y;
-                HHMMSS = ScriptUtil.MillisecondsToHHMMSS(x);
-                ScriptTime = internalTime.ToString();
-            }
-
-            public DataPoint GetDataPoint() => new(X, Y);
-        }
 
         #endregion
     }

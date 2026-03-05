@@ -62,13 +62,13 @@ namespace Core.Script
 
         public IDataPointProvider[] ToPlot()
         {
-            List<CustomDataPoint> result = new() { new(0, Data.Actions[0].Pos, 0) };
+            List<FunscriptDataPoint> result = new() { new(0, Data.Actions[0].Pos, "0ms") };
 
             int prevtime = 0;
             foreach (var item in Data.Actions)
             {
                 int at = item.At;
-                result.Add(new(at, item.Pos, at - prevtime));
+                result.Add(new(at, item.Pos, $"{at - prevtime}ms"));
                 prevtime = at;
             }
             return result.ToArray();
@@ -97,30 +97,10 @@ namespace Core.Script
 
         #region Inner Types
 
-        /// <summary>
-        /// csvの行のデータを保持する構造体
-        /// </summary>
-        public class CustomDataPoint : IDataPointProvider, IScriptDataPoint
+        public class FunscriptDataPoint(double x, double y, string duration)
+            : CustomDataPoint(x, y, x.ToString())
         {
-            public double X { get; }
-            public double Y { get; }
-            public string Duration { get; }
-            public string HHMMSS { get; }
-            public string ScriptTime { get; }
-
-            public CustomDataPoint(double x, double y, int duration)
-            {
-                X = x;
-                Y = y;
-                Duration = $"{duration}ms";
-                HHMMSS = ScriptUtil.MillisecondsToHHMMSS(x);
-                ScriptTime = x.ToString();
-            }
-
-            public DataPoint GetDataPoint()
-            {
-                return new DataPoint(X, Y);
-            }
+            public string Duration { get; } = duration;
         }
 
         #endregion
